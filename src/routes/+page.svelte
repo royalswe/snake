@@ -1,7 +1,3 @@
-<script context="module" lang="ts">
-	export const prerender = true;
-</script>
-
 <script lang="ts">
 	import Counter from '$lib/Counter.svelte';
 </script>
@@ -24,7 +20,7 @@
 	</h1>
 
 	<h2>
-		try editing <strong>src/routes/index.svelte</strong>
+		try editing <strong>src/routes/+page.svelte</strong>
 	</h2>
 
 	<Counter />

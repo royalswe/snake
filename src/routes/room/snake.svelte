@@ -1,5 +1,5 @@
 <script lang="ts">
-    import SnakeBody from './SnakeBody.svelte'
+    import SnakeBody from "./snakeBody.svelte";
     export let direction:string;
     export let snakeTiles: {x: number, y: number}[] = [];    
 </script>
