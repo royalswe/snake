@@ -7,7 +7,7 @@ import { state } from '$lib/stores/state';
 // we will export a function that can be called by our root
 // component after mounting to connnect
 let ws: WebSocket;
-export const connect = (socketURL: string) => {
+export const connect = (socketURL: string, roomName: string) => {
 	console.log('url: ' + socketURL);
 
 	ws = new WebSocket(socketURL);
@@ -21,7 +21,8 @@ export const connect = (socketURL: string) => {
 
 	ws.addEventListener('open', () => {
 		// TODO: Set up ping/pong, etc.
-		console.log('Connected with ping pong long!');
+		console.log('Connected! lets join' + roomName);
+		ws.send(JSON.stringify( {type:'join-room', msg: roomName} ))
 	});
 
 	ws.addEventListener('message', (message: any) => {
@@ -35,6 +36,9 @@ export const connect = (socketURL: string) => {
 			case 'game-state':
 				board.set(data.message);
 				break;
+			case 'joined-game':
+				state.setState(data.message)
+			break;
 			case 'game-over':
 				alert('game over');
 				break;

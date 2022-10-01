@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount, setContext } from 'svelte';
-	import { connect, send } from '$lib/ws';
 	import Board from './board.svelte';
 
 	const canvasWidth: number = 600;
@@ -18,14 +17,6 @@
 		});
 	}
 
-	onMount(async () => {
-		//connect('ws://localhost:3100/room');
-		connect(
-			(window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
-				location.hostname +
-				'/room:3100'
-		);
-	});
 </script>
 
 <Board width={canvasWidth} height={canvasHeight} />

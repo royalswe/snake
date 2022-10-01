@@ -7,6 +7,13 @@ function Session(room) {
 }
 
 Session.prototype = {
+	// A
+	// B
+	// C
+	// D
+	// E
+	// F
+	// G
 	getUpdatedVelocity: function (keyCode) {
 		switch (keyCode) {
 			case 'ArrowLeft': {
@@ -52,7 +59,35 @@ Session.prototype = {
 		playerOne.snake.push({ ...playerOne.pos });
 		// playerOne.pos.y += playerOne.vel.y;
 		// playerOne.pos.x += playerOne.vel.x;
+	},
+	// H
+	// I
+	// J
+	join: function(client){
+		for (const c of this.clients) {
+			if (c.id === client.id) {
+				return false; // client exist already
+			}
+		}
+
+		this.clients.add(client);
+		client.session = this; // easy to acces session from client
 	}
+	// K
+	// L
+	// M
+	// N
+	// O
+	// P
+	// Q
+	// R
+	// S
+	// T
+	// U
+	// V
+	// X
+	// Z
+
 };
 
 export default Session;

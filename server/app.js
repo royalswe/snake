@@ -8,8 +8,6 @@ const decoder = new TextDecoder('utf-8');
 const port = process.env.PORT || 3100;
 
 const sessions = new Map();
-const state = {};
-const clientRooms = {};
 
 // Accurate loop
 function intervalTimer(callback, interval = 500) {
@@ -47,16 +45,19 @@ function startGameIntervall(client) {
 	}, 1000 / FRAME_RATE);
 }
 
-function handleNewGame(client) {
-	let roomname = makeid(5);
-	clientRooms[client.id];
-	state[roomname] = client.gameState;
+function createSession(roomName) {
+	if (sessions.has(roomName)) {
+		throw new Error(`room ${roomName} already exists`)
+	}
 
-	const session = new Session(roomname);
-	sessions.set(session);
-	client.nr = 1;
+	const session = new Session(roomName);
+	sessions.set(roomName, session);
 
-	return { room: roomname, nr: client.nr };
+	return session;
+}
+
+function getSession(roomName) {
+	return sessions.get(roomName)
 }
 
 const uws = uWebSockets
@@ -87,7 +88,7 @@ const uws = uWebSockets
 			ws.client = new Client(ws);
 			//ws.client.gameState =
 
-			ws.subscribe('roomname');
+			
 			ws.client.send(JSON.stringify({ type: 'init', message: 'Welcome to the snake game!' }));
 		},
 		message: (ws, message, isBinary) => {
@@ -112,14 +113,27 @@ const uws = uWebSockets
 					console.log(ws.client.gameState);
 					break;
 				}
+				case 'join-room:': {
+					ws.subscribe(clientMsg.msg); // subscribe to the room name
+					break;
+				}
 				case 'game-status:': {
 					break;
 				}
-				case 'start-game': {
-					const game = handleNewGame(ws.client);
+				case 'join-game': {
+					const session = getSession(clientMsg.msg) || createSession(ws.client, clientMsg.msg);
+					if (!session.join(ws.client)) {
+						return; // Could not join game session
+					}
 					serverMsg = {
-						type: 'start-game',
-						msg: game
+						type: 'joined-game'
+					}
+					break;
+				}
+				case 'start-game': {
+					
+					serverMsg = {
+						type: 'start-game'
 					};
 
 					startGameIntervall(ws.client);

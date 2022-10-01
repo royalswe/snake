@@ -2,21 +2,25 @@
 	import Game from './snake.svelte';
 	import { connect, send } from '$lib/ws';
 	import { page } from '$app/stores';
-
-	let gameCode: string;
-
-	function newGame() {
-		send({
-			type: 'start-game'
-		});
-	}
+	import { onMount } from 'svelte';
+	let roomName = $page.params.slug;
 
 	function joinGame() {
 		send({
 			type: 'join-game',
-			msg: gameCode
+			msg: roomName
 		});
 	}
+
+	onMount(async () => {
+		//connect('ws://localhost:3100/room');
+		connect(
+			(window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
+				location.hostname +
+				'/room:3100',
+			roomName
+		);
+	});
 </script>
 
 <svelte:head>
@@ -30,7 +34,7 @@
 	/>
 </svelte:head>
 
-{$page.params.slug}
+{roomName}
 
 <section class="vh-100">
 	<div class="container h-100">
@@ -41,6 +45,7 @@
 				<Game />
 			</div>
 		</div>
+		<button on:click={joinGame}>Join game</button>
 	</div>
 </section>
 
