@@ -1,8 +1,8 @@
 <style>
     #game-board{
         background-color: #fafafa;
-        width: 90vmin;
-        height: 90vmin;
+        width: 70vmin;
+        height: 70vmin;
         display: grid;
         grid-template-rows: repeat(21, 1fr);
         grid-template-columns: repeat(21, 1fr);

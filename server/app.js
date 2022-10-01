@@ -1,8 +1,15 @@
 import uWebSockets from 'uWebSockets.js';
 import Client from './client.js';
+import Session from './session.js';
+import { FRAME_RATE, GRID_SIZE } from './constants.js';
+import { makeid } from './utils.js';
 
 const decoder = new TextDecoder('utf-8');
 const port = process.env.PORT || 3100;
+
+const sessions = new Map();
+const state = {};
+const clientRooms = {};
 
 // Accurate loop
 function intervalTimer(callback, interval = 500) {
@@ -28,7 +35,32 @@ function intervalTimer(callback, interval = 500) {
 	};
 }
 
-const uws = uWebSockets.App()
+function startGameIntervall(client) {
+	const intervalId = setInterval(() => {
+		const winner = Session.gameLoop(client.gameState);
+		if (!winner) {
+			client.send(JSON.stringify({ type: 'game-state', message: client.gameState }));
+		} else {
+			client.send(JSON.stringify({ type: 'game-over' }));
+			clearInterval(intervalId);
+		}
+	}, 1000 / FRAME_RATE);
+}
+
+function handleNewGame(client) {
+	let roomname = makeid(5);
+	clientRooms[client.id];
+	state[roomname] = client.gameState;
+
+	const session = new Session(roomname);
+	sessions.set(session);
+	client.nr = 1;
+
+	return { room: roomname, nr: client.nr };
+}
+
+const uws = uWebSockets
+	.App()
 	.ws('/*', {
 		idleTimeout: 32,
 		maxBackpressure: 1024,
@@ -53,84 +85,69 @@ const uws = uWebSockets.App()
 		open: (ws) => {
 			console.log('A WebSocket connected with URL: ' + ws.url);
 			ws.client = new Client(ws);
-			ws.client.snakeBody = [
-				{
-					x:10,
-					y:1
-				},
-				{
-					x:11,
-					y:1
-				},
-				{
-					x:12,
-					y:1
-				}
-			];
+			//ws.client.gameState =
+
 			ws.subscribe('roomname');
-			ws.client.send(JSON.stringify({type: 'init', message: 'Welcome to the snake game!'}));
+			ws.client.send(JSON.stringify({ type: 'init', message: 'Welcome to the snake game!' }));
 		},
 		message: (ws, message, isBinary) => {
-			console.log('start here -----------------------------------------------------');
 			/* You can do app.publish('sensors/home/temperature', '22C') kind of pub/sub as well */
-			console.log(
-				isBinary ? 'Binary message received: ' + message : 'Text message received: ' + message
-			);
 
 			const clientMsg = JSON.parse(decoder.decode(message));
 			let serverMsg = {};
 
 			switch (clientMsg.type) {
+				case 'movement': {
+					const velocity = Session.getUpdatedVelocity(clientMsg.msg);
+					if (velocity) {
+						ws.client.gameState.vel = velocity;
+					}
+
+					break;
+				}
+				case 'reset-game': {
+					//objectchanger(ws.client.gamestate, 'snake', { x: 1, y: 10 });
+					console.log(resetGameState);
+					ws.client.gameState = { ...resetGameState };
+					console.log(ws.client.gameState);
+					break;
+				}
+				case 'game-status:': {
+					break;
+				}
 				case 'start-game': {
+					const game = handleNewGame(ws.client);
 					serverMsg = {
 						type: 'start-game',
-					}
+						msg: game
+					};
 
-				// run loop
-				const cancelTimer = intervalTimer(() => {
-					if (isGameover() === false) {
-						// game logic
-						let { x, y } = snakeTiles[0];
-
-						if (direction === 'up') {
-							y -= 1;
-						} else if (direction === 'down') {
-							y += 1;
-						} else if (direction === 'left') {
-							x -= 1;
-						} else if (direction === 'right') {
-							x += 1;
-						}
-
-						const newHead = { x, y };
-						snakeTiles = [newHead, ...snakeTiles];
-
-						snakeTiles = [...snakeTiles, snakeTiles[snakeTiles.length - 1]];
-					} else {
-						cancelTimer();
-						resetGame();
-					}
-				}, 1000);
+					startGameIntervall(ws.client);
+					// // run 	loop
+					// const cancelTimer = intervalTimer(() => {
+					// 	if (isGameover() === false) {
+					// 		// game logic
+					// 	} else {
+					// 		cancelTimer();
+					// 	}
+					// }, 1000);
 
 					break;
 				}
 				case 'chat-message': {
 					serverMsg = {
 						type: 'chat-message',
-						message: clientMsg.message
-					}
+						msg: clientMsg.message
+					};
 					break;
 				}
 			}
 
-			
 			/* Here we echo the message back, using compression if available */
 			//let ok = ws.send(message, isBinary, true); // sender only
 			//ws.publish('home/sensors/temperature', message, isBinary, true); // to all except the sender
-			
-            uws.publish('roomname', JSON.stringify(serverMsg), isBinary, true); // to all
 
-			console.log('end here -----------------------------------------------------');
+			uws.publish('roomname', JSON.stringify(serverMsg), isBinary, true); // to all
 		},
 		close: (ws, code, msg) => {
 			console.log('WebSocket closed');
@@ -141,3 +158,24 @@ const uws = uWebSockets.App()
 			? console.log(`Listening to uws ${port}`)
 			: console.log(`Failed to listen uws port ${port}`);
 	});
+
+const resetGameState = Object.freeze({
+	pos: {
+		x: 3,
+		y: 10
+	},
+	vel: {
+		x: 1,
+		y: 0
+	},
+	snake: [
+		{ x: 1, y: 10 },
+		{ x: 2, y: 10 },
+		{ x: 3, y: 10 }
+	],
+	gridsize: GRID_SIZE
+});
+
+function objectchanger(obj, att, val) {
+	obj[att] = val;
+}

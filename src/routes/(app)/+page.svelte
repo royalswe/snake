@@ -10,10 +10,7 @@
 <section>
 	<h1>
 		<span class="welcome">
-			<picture>
-				<source srcset="svelte-welcome.webp" type="image/webp" />
-				<img src="svelte-welcome.png" alt="Welcome" />
-			</picture>
+			<a href="/game">SNAKE</a>
 		</span>
 
 		to your new<br />SvelteKit app
