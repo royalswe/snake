@@ -1,14 +1,17 @@
 <script lang="ts">
 	import { onMount, setContext } from 'svelte';
 	import Board from './board.svelte';
+	import { send } from '$lib/ws';
 
 	const canvasWidth: number = 600;
 	const canvasHeight: number = 600;
 	const GRID_SIZE = 20;
 
 	function onKeyDown(e: KeyboardEvent) {
-		console.log(e.code);
-		send({ type: 'movement', msg: e.code });
+		var availableKeys = ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'];
+		if (availableKeys.indexOf(e.code) != -1) {
+			send({ type: 'movement', msg: e.code });
+		}
 	}
 
 	function resetGame() {
@@ -16,7 +19,6 @@
 			type: 'reset-game'
 		});
 	}
-
 </script>
 
 <Board width={canvasWidth} height={canvasHeight} />

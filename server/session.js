@@ -1,15 +1,50 @@
-import { GRID_SIZE } from './constants.js';
+import { GRID_SIZE, PLAYER_STATUS } from './helpers/constants.js';
+import { isEveryStatusSame } from './helpers/utils.js';
 
 function Session(room) {
 	this.id = room;
 	this.clients = new Set();
 	this.status = 'waiting';
+	this.timer = null;
 }
 
 Session.prototype = {
 	// A
 	// B
 	// C
+
+	countDown: function (duration = 3000) {
+		clearTimeout(this.timer);
+		return new Promise((resolve, reject) => {
+			setTimeout(() => {
+				if (isEveryStatusSame(this.clients, PLAYER_STATUS.ready)) {
+					reject;
+				}
+				resolve({
+					type: 'game-status',
+					msg: PLAYER_STATUS.running
+				});
+			}, duration);
+		});
+		// const countdown = (finnish) => {
+		// 	this.timer = setTimeout(() => {
+		// 		return finnish();
+		// 	}, duration);
+		// };
+
+		//countdown(async () => {
+		// this.timer = null;
+		// console.log('start the game');
+		// const msg = {
+		// 	type: 'game-state',
+		// 	msg: PLAYER_STATUS.running
+		// };
+		// this.timer = await setTimeout(() => {
+		// 	callback(msg);
+		// }, duration);
+
+		//});
+	},
 	// D
 	// E
 	// F
@@ -63,18 +98,24 @@ Session.prototype = {
 	// H
 	// I
 	// J
-	join: function(client){
+	join: function (client) {
 		for (const c of this.clients) {
 			if (c.id === client.id) {
 				return false; // client exist already
 			}
 		}
-
 		this.clients.add(client);
 		client.session = this; // easy to acces session from client
-	}
+	},
 	// K
 	// L
+	leave: function (client) {
+		if (client.session !== this) {
+			throw new Error('client do not exist in session');
+		}
+		console.log('client delete', client);
+		this.clients.delete(client);
+	}
 	// M
 	// N
 	// O
@@ -87,7 +128,6 @@ Session.prototype = {
 	// V
 	// X
 	// Z
-
 };
 
 export default Session;

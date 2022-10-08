@@ -21,29 +21,28 @@ export const connect = (socketURL: string, roomName: string) => {
 
 	ws.addEventListener('open', () => {
 		// TODO: Set up ping/pong, etc.
-		console.log('Connected! lets join' + roomName);
-		ws.send(JSON.stringify( {type:'join-room', msg: roomName} ))
+		console.log('Connected! lets join ' + roomName);
+		ws.send(JSON.stringify({ type: 'join-room', msg: roomName }));
 	});
 
 	ws.addEventListener('message', (message: any) => {
 		const data = JSON.parse(message.data);
 		console.log(data);
-		console.log(data.type);
+
 		switch (data.type) {
-			case 'chat-message':
-				state.update((state) => ({ ...state, messages: [data.message].concat(state.messages) }));
-				break;
 			case 'game-state':
-				board.set(data.message);
+				board.set(data.msg);
 				break;
-			case 'joined-game':
-				state.setState(data.message)
-			break;
-			case 'game-over':
-				alert('game over');
+			case 'player-status':
+				state.setPlayerState(data.msg);
 				break;
 			case 'game-status':
-				state.update((s) => ({ ...s, gameState: data.message }));
+				state.setGameState(data.msg);
+				break;
+			case 'game-started':
+				break;
+			case 'chat-message':
+				state.update((state) => ({ ...state, messages: [data.msg].concat(state.messages) }));
 				break;
 			default:
 				state.update((state) => ({ ...state, items: [data].concat(state.items) }));

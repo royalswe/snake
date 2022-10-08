@@ -1,9 +1,10 @@
 function Client(socket, id = Math.random().toString(16).slice(2)) {
 	this.socket = socket;
 	this.id = id;
-	this.nr = 0;
+	this.room = null;
 	this.snakeBody = null;
 	this.session = null;
+	this.status = 'joined';
 
 	this.gameState = {
 		pos: {

@@ -7,3 +7,5 @@ export function makeid() {
 	}
 	return id;
 }
+
+export const isEveryStatusSame = (set, status) => [...set].every((obj) => obj.status === status);
