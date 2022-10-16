@@ -10,7 +10,7 @@
 <section>
 	<h1>
 		<span class="welcome">
-			<a href="/game">SNAKE</a>
+			<a href="/game/sara">SNAKE</a>
 		</span>
 
 		to your new<br />SvelteKit app

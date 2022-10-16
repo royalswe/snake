@@ -63,16 +63,23 @@
 				<Game />
 			</div>
 		</div>
-		{#if $state.playerState === 'spectating'}
-			<!-- TODO: only show when game not full -->
-			<button on:click={joinGame}>Join game</button>
-		{:else if $state.playerState === 'joined'}
-			<button on:click={ready}>Ready</button>
-		{/if}
+		<div id="btns">
+			{#if $state.playerState === 'spectating'}
+				<!-- TODO: only show when game not full -->
+				<button on:click={joinGame}>Join game</button>
+			{:else if $state.playerState === 'joined'}
+				<button on:click={ready}>Ready</button>
+			{/if}
+		</div>
 	</div>
 </section>
 
 <style>
+	#btns {
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
 	/* #gameScreen {
 		display: none;
 	} */

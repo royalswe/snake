@@ -5,7 +5,6 @@
 
 	const canvasWidth: number = 600;
 	const canvasHeight: number = 600;
-	const GRID_SIZE = 20;
 
 	function onKeyDown(e: KeyboardEvent) {
 		var availableKeys = ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'];

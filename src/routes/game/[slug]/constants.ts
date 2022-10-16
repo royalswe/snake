@@ -6,3 +6,5 @@ export const COLOURS = {
 	SNAKE: 'green',
 	FOOD: 'orange'
 };
+
+export const GRID_SIZE = 40;

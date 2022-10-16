@@ -9,3 +9,10 @@ export function makeid() {
 }
 
 export const isEveryStatusSame = (set, status) => [...set].every((obj) => obj.status === status);
+
+export const velocity = {
+	ArrowLeft: { x: -1, y: 0 },
+	ArrowDown: { x: 0, y: 1 },
+	ArrowRight: { x: 1, y: 0 },
+	ArrowUp: { x: 0, y: -1 }
+};

@@ -1,12 +1,12 @@
 import uWebSockets from 'uWebSockets.js';
-import { message, close } from './message.js';
+import { game, close } from './game.js';
+import { lobby } from './lobby.js';
 
 const uws = uWebSockets.App();
 const port = process.env.PORT || 3100;
 
 const open = (ws) => {
 	console.log('A WebSocket connected with URL: ' + ws.url);
-
 	ws.send(JSON.stringify({ type: 'init', message: 'Welcome to the snake game!' }));
 };
 
@@ -32,7 +32,13 @@ uws.ws('/*', {
 	},
 
 	open,
-	message,
+	message: (ws, arrayBuffer, isBinary) => {
+		if (ws.url === '/room') {
+			return game(ws, arrayBuffer, isBinary);
+		} else if (ws.url === '/lobby') {
+			return lobby(ws, arrayBuffer, isBinary);
+		}
+	},
 	close
 });
 

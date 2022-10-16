@@ -1,9 +1,10 @@
 export interface GameState {
+	color: string;
 	pos: Cell;
 	vel: Cell;
 	snake: Cell[];
 	food: Cell;
-	gridsize: number;
+	gridSize: number;
 }
 
 export interface Cell {

@@ -1,4 +1,16 @@
 <script lang="ts">
+	import { connect, send } from '$lib/ws';
+	import { onMount } from 'svelte';
+
+	onMount(async () => {
+		//connect('ws://localhost:3100/room');
+		connect(
+			(window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
+				location.hostname +
+				':3100/looby',
+			'lobby'
+		);
+	});
 	let gameCode: string;
 </script>
 

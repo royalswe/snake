@@ -4,46 +4,46 @@
 
 <script lang="ts">
 	import { onMount, getContext } from 'svelte';
-	import { COLOURS } from './constants';
+	import { COLOURS, GRID_SIZE } from './constants';
 	import type { GameState, Cell } from '$lib/types';
 	import { board } from '$lib/stores/board';
 
 	console.log('gamestate:', $board);
 
-	export let width: number;
-	export let height: number;
+	export let width = 600;
+	export let height = 600;
 
 	let canvas: HTMLCanvasElement;
 	let ctx: any;
 
 	onMount(() => {
-		board.subscribe((val: any) => {
-			console.log('val', val);
-			if (!val) {
+		board.subscribe((states: any) => {
+			if (!states) {
 				return;
 			}
-			requestAnimationFrame(() => drawCanvas(val));
+			requestAnimationFrame(() => {
+				states.forEach((state: GameState) => {
+					drawPlayer(state);
+				});
+			});
 		});
 		ctx = canvas.getContext('2d');
 		ctx.fillStyle = COLOURS.BG;
 		ctx.fillRect(0, 0, canvas.width, canvas.height);
+		drawCanvas();
 		//drawCanvas(gameState);
 	});
 
-	function drawCanvas(state: GameState) {
+	function drawCanvas() {
 		ctx.fillStyle = COLOURS.BG;
 		ctx.fillRect(0, 0, width, height);
-
-		const gridsize = state.gridsize;
-		const size = width / gridsize;
-
-		drawPlayer(state, size);
 	}
 
-	function drawPlayer(state: GameState, size: number) {
-		const snake = state.snake;
+	function drawPlayer(state: GameState) {
+		const size = width / state.gridSize;
 
-		ctx.fillStyle = COLOURS.SNAKE;
+		const snake = state.snake;
+		ctx.fillStyle = state.color;
 
 		for (let i = 0; i < snake.length; i++) {
 			const cell = snake[i];
