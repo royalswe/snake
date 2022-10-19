@@ -77,31 +77,28 @@ Session.prototype = {
 		//((const client = this.clients.keys().next().value;
 		for (const client of this.clients) {
 			const state = client.gameState;
-			console.log('state', state);
-			if (!state) {
+			if (client.status !== PLAYER_STATUS.ready && !state) {
+				console.log(client.status, 'is game over');
 				return;
 			}
 
-			//const playerOne = state;
 			state.pos.y += state.vel.y;
 			state.pos.x += state.vel.x;
 
-			// check if hit any walls or snake
-			if (
-				state.pos.x < 0 ||
-				state.pos.x > GRID_SIZE ||
-				state.pos.y < 0 ||
-				state.pos.y > GRID_SIZE
-			) {
-				console.log('hit the wall');
-				return true;
+			for (const c of this.clients) {
+				if (isCollide({ y: state.pos.y, x: state.pos.x }, c.gameState)) {
+					client.status = PLAYER_STATUS.lost;
+					//console.log(this.clients);
+					const winner = [...this.clients].filter((v) => v.status === PLAYER_STATUS.ready);
+					if (winner.length <= 1) {
+						console.log('winner is', winner);
+						return true;
+					}
+				}
 			}
 
 			// snage grow
 			state.snake.push({ ...state.pos });
-			// playerOne.pos.y += playerOne.vel.y;
-			// playerOne.pos.x += playerOne.vel.x;
-			//});
 		}
 	},
 	// H
@@ -139,5 +136,18 @@ Session.prototype = {
 	// X
 	// Z
 };
+
+function isCollide({ x, y }, stateB) {
+	// console.log(id, idB, x, stateB.pos.x, y, stateB.pos.y);
+	// if (id !== idB && x === stateB.pos.x && y === stateB.pos.y) {
+	// 	console.log('hits head');
+	// 	return true; // head hits head
+	// }
+	if (stateB.snake.some((o) => o.x === x && o.y === y)) {
+		return true; // snake hits snake
+	}
+	// snake hits wall
+	return x > GRID_SIZE || y > GRID_SIZE || x < 0 || y < 0;
+}
 
 export default Session;

@@ -1,20 +1,17 @@
 import uws from './uws.js';
-import { GRID_SIZE } from './helpers/constants.js';
+import { GRID_SIZE, PLAYER_STATUS } from './helpers/constants.js';
 
 function Client(ws, id = Math.random().toString(16).slice(2)) {
 	this.ws = ws;
 	this.id = id;
 	this.room = null;
 	this.session = null;
-	this.status = 'joined';
+	this.status = PLAYER_STATUS.joined;
 
 	this.gameState = {
 		color: 'grey',
 		pos: {},
-		vel: {
-			x: 1,
-			y: 0
-		},
+		vel: {},
 		snake: [],
 		gridSize: GRID_SIZE
 	};
@@ -25,9 +22,7 @@ Client.prototype = {
 	 * Send to local client only
 	 */
 	send: function (message, isBinary = true, compress = true) {
-		console.log(message);
 		const ok = this.ws.send(JSON.stringify(message), isBinary, compress);
-		console.log(ok);
 		if (!ok) {
 			console.error('problem sending client msg from ' + this.room);
 		}

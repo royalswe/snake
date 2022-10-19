@@ -5,6 +5,7 @@
 	import { onMount } from 'svelte';
 	import { state } from '$lib/stores/state';
 	import CountDown from './countDown.svelte';
+	import { PLAYER_STATUS } from './constants';
 
 	const roomName = $page.params.slug;
 	//let gameState = $state.gameState;
@@ -14,6 +15,21 @@
 	// function drawStatus() {
 	// 	console.log('new status: ' + $state.gameState);
 	// }
+
+	function develop() {
+		console.log('develop', $state.gameState);
+
+		if ($state.playerState === PLAYER_STATUS.spectating) {
+			send({
+				type: 'join-game',
+				msg: roomName
+			});
+		} else if ($state.playerState === PLAYER_STATUS.joined) {
+			send({
+				type: 'player-ready'
+			});
+		}
+	}
 
 	function joinGame() {
 		send({
@@ -42,28 +58,20 @@
 <svelte:head>
 	<title>Snake</title>
 	<meta name="description" content="Svelte snake app" />
-	<link
+	<!-- <link
 		rel="stylesheet"
 		href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
 		integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
 		crossorigin="anonymous"
-	/>
+	/> -->
 </svelte:head>
 
-<section class="vh-100">
-	<div class="container h-100">
-		<div id="gameScreen" class="h-100">
-			<div class="d-flex flex-column align-items-center justify-content-center h-100">
-				<h1>Your game code is: <span id="gameCodeDisplay" />{roomName}</h1>
-				GameState: {$state.gameState} / PlayerState {$state.playerState}
-				{#if $state.gameState === 'count-down'}
-					<CountDown />
-				{/if}
-
-				<Game />
-			</div>
-		</div>
-		<div id="btns">
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<section on:click={develop}>
+	<div class="container">
+		<h1>Your game code is: <span id="gameCodeDisplay" />{roomName}</h1>
+		GameState: {$state.gameState} / PlayerState {$state.playerState}
+		<div id="chat-container">
 			{#if $state.playerState === 'spectating'}
 				<!-- TODO: only show when game not full -->
 				<button on:click={joinGame}>Join game</button>
@@ -71,14 +79,45 @@
 				<button on:click={ready}>Ready</button>
 			{/if}
 		</div>
+		<div class="game-container">
+			{#if $state.gameState === 'count-down'}
+				<CountDown />
+			{/if}
+
+			<Game />
+		</div>
 	</div>
 </section>
 
 <style>
-	#btns {
-		position: absolute;
-		top: 0;
-		left: 0;
+	* {
+		box-sizing: border-box;
+	}
+	section {
+		position: relative;
+		height: 100vh;
+		width: 100vw;
+		background-color: black;
+		overflow: hidden;
+	}
+	.container {
+		position: relative;
+		height: 100%;
+		width: 100%;
+		background-color: rgb(180, 180, 180);
+	}
+	.game-container {
+		position: relative;
+		width: 80%;
+		height: 80%;
+		background-color: aqua;
+		float: right;
+	}
+	#chat-container {
+		width: 20%;
+		height: 90%;
+		background-color: aquamarine;
+		float: left;
 	}
 	/* #gameScreen {
 		display: none;

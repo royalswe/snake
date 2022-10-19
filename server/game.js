@@ -7,7 +7,8 @@ import {
 	GAME_STATUS,
 	PLAYER_STATUS,
 	TYPE,
-	START_POSITION
+	START_POSITION,
+	VELOCITY
 } from './helpers/constants.js';
 import { isEveryStatusSame, velocity } from './helpers/utils.js';
 
@@ -34,6 +35,7 @@ function setStartPosition(client) {
 
 	client.gameState.pos = START_POSITION[countPlayers];
 	client.gameState.color = COLOR[countPlayers];
+	client.gameState.vel = VELOCITY[countPlayers];
 }
 
 export const game = (ws, message, isBinary) => {
@@ -68,6 +70,7 @@ export const game = (ws, message, isBinary) => {
 			ws.client.status = PLAYER_STATUS.ready;
 			ws.client.send({ type: 'player-status', msg: ws.client.status }, isBinary);
 
+			console.log(session.clients);
 			if (isEveryStatusSame(session.clients, PLAYER_STATUS.ready)) {
 				ws.client.roomEmit(
 					{

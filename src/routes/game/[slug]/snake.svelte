@@ -20,7 +20,7 @@
 	}
 </script>
 
-<Board width={canvasWidth} height={canvasHeight} />
+<Board />
 
 <svelte:window on:keydown={onKeyDown} />
 <button on:click={resetGame}>reset</button>
