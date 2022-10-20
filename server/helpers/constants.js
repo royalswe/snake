@@ -1,5 +1,6 @@
-export const FRAME_RATE = 35;
-export const GRID_SIZE = 40;
+export const FRAME_RATE = 50;
+export const GRID_WIDTH = 46;
+export const GRID_HEIGHT = 30;
 export const COUNT_DOWN = 1100;
 
 export const GAME_STATUS = Object.freeze({
@@ -16,19 +17,21 @@ export const PLAYER_STATUS = Object.freeze({
 });
 
 export const TYPE = Object.freeze({
-	movement: 'movement',
-	resetGame: 'reset-game',
-	joinRoom: 'join-room',
-	playerReady: 'player-ready',
+	chatMessage: 'chat-message',
+	gameStatus: 'game-status',
 	joinGame: 'join-game',
-	chatMessage: 'chat-message'
+	joinRoom: 'join-room',
+	movement: 'movement',
+	playerReady: 'player-ready',
+	playerStatus: 'player-status',
+	resetGame: 'reset-game'
 });
 
 export const START_POSITION = Object.freeze({
 	1: { x: 3, y: 3 },
-	2: { x: GRID_SIZE - 3, y: GRID_SIZE - 3 },
-	3: { x: 3, y: GRID_SIZE - 3 },
-	4: { x: GRID_SIZE - 3, y: 3 }
+	2: { x: GRID_WIDTH - 3, y: GRID_HEIGHT - 3 },
+	3: { x: 3, y: GRID_HEIGHT - 3 },
+	4: { x: GRID_WIDTH - 3, y: 3 }
 });
 
 export const VELOCITY = Object.freeze({

@@ -9,9 +9,7 @@ export const PLAYER_STATUS = Object.freeze({
 
 // colours
 export const COLOURS = {
-	BG: 'black',
+	BG: 'purple',
 	SNAKE: 'green',
 	FOOD: 'orange'
 };
-
-export const GRID_SIZE = 40;

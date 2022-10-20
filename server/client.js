@@ -1,5 +1,5 @@
 import uws from './uws.js';
-import { GRID_SIZE, PLAYER_STATUS } from './helpers/constants.js';
+import { GRID_HEIGHT, GRID_WIDTH, PLAYER_STATUS } from './helpers/constants.js';
 
 function Client(ws, id = Math.random().toString(16).slice(2)) {
 	this.ws = ws;
@@ -13,7 +13,7 @@ function Client(ws, id = Math.random().toString(16).slice(2)) {
 		pos: {},
 		vel: {},
 		snake: [],
-		gridSize: GRID_SIZE
+		grid: { x: GRID_WIDTH, y: GRID_HEIGHT }
 	};
 }
 

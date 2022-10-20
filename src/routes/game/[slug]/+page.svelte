@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Game from './snake.svelte';
+	import Snake from './snake.svelte';
 	import { connect, send } from '$lib/ws';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
@@ -79,13 +79,7 @@
 				<button on:click={ready}>Ready</button>
 			{/if}
 		</div>
-		<div class="game-container">
-			{#if $state.gameState === 'count-down'}
-				<CountDown />
-			{/if}
-
-			<Game />
-		</div>
+		<Snake />
 	</div>
 </section>
 
@@ -106,20 +100,11 @@
 		width: 100%;
 		background-color: rgb(180, 180, 180);
 	}
-	.game-container {
-		position: relative;
-		width: 80%;
-		height: 80%;
-		background-color: aqua;
-		float: right;
-	}
+
 	#chat-container {
 		width: 20%;
 		height: 90%;
 		background-color: aquamarine;
 		float: left;
 	}
-	/* #gameScreen {
-		display: none;
-	} */
 </style>

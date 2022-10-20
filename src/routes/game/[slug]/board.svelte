@@ -4,16 +4,33 @@
 
 <script lang="ts">
 	import { onMount, getContext } from 'svelte';
-	import { COLOURS, GRID_SIZE } from './constants';
-	import type { GameState, Cell } from '$lib/types';
+	import { COLOURS } from './constants';
+	import type { GameState } from '$lib/types';
 	import { board } from '$lib/stores/board';
 
-	let canvasWidth: number;
-	let canvasHeight: number;
-	$: quadrat = Math.min(canvasWidth, canvasHeight);
+	export let parentWidth: number;
+	export let parentHeight: number;
+	let width: number = 46;
+	let height: number = 30;
+	let grid: any;
 
 	let canvas: HTMLCanvasElement;
 	let ctx: any;
+
+	const delay = (func, delay) => {
+		let timer;
+		return function () {
+			const context = this;
+			const args = arguments;
+			clearTimeout(timer);
+			timer = setTimeout(() => func.apply(context, args), delay);
+		};
+	};
+
+	function calculateAspectRatioFit() {
+		const ratio = Math.min(parentWidth / width, parentHeight / height);
+		return { width: width * ratio, height: height * ratio };
+	}
 
 	onMount(() => {
 		board.subscribe((states: any) => {
@@ -32,21 +49,48 @@
 			drawCanvas();
 		});
 
-		window.addEventListener('resize', drawCanvas);
+		window.addEventListener('resize', delay(drawCanvas, 100));
+		return () => {
+			window.removeEventListener('resize', delay(drawCanvas, 100));
+		};
 	});
 
 	function drawCanvas() {
+		grid = calculateAspectRatioFit();
+
+		const w = grid.width;
+		const h = grid.height;
+		const step = (w + h) / 76;
+
+		ctx.canvas.width = w;
+		ctx.canvas.height = h;
+
 		ctx.fillStyle = COLOURS.BG;
-		ctx.fillRect(0, 0, quadrat, quadrat);
+		ctx.fillRect(0, 0, w, h);
+
+		for (let x = 0; x <= w; x += step) {
+			ctx.moveTo(x, 0);
+			ctx.lineTo(x, h);
+		}
+		for (let y = 0; y <= h; y += step) {
+			ctx.moveTo(0, y);
+			ctx.lineTo(w, y);
+		}
+		ctx.stroke();
 	}
 
 	function drawPlayer(state: GameState) {
-		const size = quadrat / state.gridSize;
+		const w = grid.width;
+		const h = grid.height;
+		const size = (w + h) / (state.grid.x + state.grid.y);
+		console.log(w, h, size, state.grid.x, state.grid.y);
+
 		const snake = state.snake;
-		ctx.fillStyle = state.color;
 
 		for (let i = 0; i < snake.length; i++) {
 			const cell = snake[i];
+			ctx.fillStyle = '#' + Math.floor(Math.random() * 16777215).toString(16);
+
 			//ctx.beginPath();
 			//ctx.fillStyle = '#ccc';
 			//drawBorder(cell.x * size, cell.y * size, size, size);
@@ -57,26 +101,19 @@
 		}
 	}
 
-	function drawBorder(xPos, yPos, width, height, thickness = 1) {
+	function drawBorder(xPos, yPos, w, h, thickness = 1) {
 		ctx.fillStyle = '#000';
-		ctx.fillRect(xPos - thickness, yPos - thickness, width + thickness * 2, height + thickness * 2);
+		ctx.fillRect(xPos - thickness, yPos - thickness, w + thickness * 2, h + thickness * 2);
 	}
 </script>
 
-<canvas
-	bind:this={canvas}
-	width={canvasWidth}
-	height={canvasHeight}
-	bind:offsetWidth={canvasWidth}
-	bind:offsetHeight={canvasHeight}
-/>
+<canvas bind:this={canvas} />
 
 <style>
 	canvas {
 		border: 1px solid blue;
-		object-fit: contain;
-		aspect-ratio: 1;
-		height: 100%;
-		overflow: visible;
+		/* object-fit: contain; */
+		/* aspect-ratio: 5/3;  */
+		/* height: 100%; */
 	}
 </style>

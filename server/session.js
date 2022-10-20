@@ -1,4 +1,4 @@
-import { GRID_SIZE, PLAYER_STATUS, COUNT_DOWN } from './helpers/constants.js';
+import { PLAYER_STATUS, COUNT_DOWN, GRID_WIDTH, GRID_HEIGHT } from './helpers/constants.js';
 import { isEveryStatusSame } from './helpers/utils.js';
 
 function Session(room) {
@@ -147,7 +147,7 @@ function isCollide({ x, y }, stateB) {
 		return true; // snake hits snake
 	}
 	// snake hits wall
-	return x > GRID_SIZE || y > GRID_SIZE || x < 0 || y < 0;
+	return x >= GRID_WIDTH || y >= GRID_HEIGHT || x < 0 || y < 0;
 }
 
 export default Session;

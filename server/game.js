@@ -57,6 +57,7 @@ export const game = (ws, message, isBinary) => {
 			ws.client = new Client(ws);
 			ws.subscribe(clientMsg.msg); // subscribe to the room name
 			ws.client.room = clientMsg.msg;
+			//ws.client.send({ type: TYPE.joinRoom, msg: ws.client.gameState.grid }, isBinary);
 			break;
 		}
 		case TYPE.playerReady: {
@@ -68,7 +69,7 @@ export const game = (ws, message, isBinary) => {
 				return console.error('game already started'); // if game is allready started or player clicked ready when not joined
 			}
 			ws.client.status = PLAYER_STATUS.ready;
-			ws.client.send({ type: 'player-status', msg: ws.client.status }, isBinary);
+			ws.client.send({ type: TYPE.playerStatus, msg: ws.client.status }, isBinary);
 
 			console.log(session.clients);
 			if (isEveryStatusSame(session.clients, PLAYER_STATUS.ready)) {
@@ -115,7 +116,7 @@ export const game = (ws, message, isBinary) => {
 			setStartPosition(ws.client);
 			ws.client.send(
 				{
-					type: 'player-status',
+					type: TYPE.playerStatus,
 					msg: PLAYER_STATUS.joined
 				},
 				isBinary

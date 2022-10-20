@@ -4,7 +4,7 @@ export interface GameState {
 	vel: Cell;
 	snake: Cell[];
 	food: Cell;
-	gridSize: number;
+	grid: Cell;
 }
 
 export interface Cell {
