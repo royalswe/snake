@@ -1,29 +1,41 @@
 import type { WebSocket } from 'uWebSockets.js';
+import type { GameState } from './models/gameState';
+import type Session from './session';
 import uws from "./uws";
-import { GRID_HEIGHT, GRID_WIDTH, PLAYER_STATUS } from "./constants/constants";
-import type { GameState } from './types/gameState';
+import { COLOR, PLAYER_STATUS, VELOCITY } from "./constants/constants";
+import { startPosition } from './helpers/utils';
 
 export default class Client {
   ws: WebSocket;
   id: string;
-  room: any;
-  session: any;
+  room: string;
+  session!: Session;
   status: string;
-  gameState: GameState
+  gameState!: GameState
 
-  constructor(ws: WebSocket, id = Math.random().toString(16).slice(2)) {
+  constructor(ws: WebSocket, room: string, id = Math.random().toString(16).slice(2)) {
     this.ws = ws;
     this.id = id;
-    this.room = null;
-    this.session = null;
-    this.status = PLAYER_STATUS.joined;
+    this.room = room;
+    this.session;
+    this.status = PLAYER_STATUS.spectating;
+    this.gameState;
+  }
+
+  setGamestate() {
+    const countPlayers: number = [...this.session.clients].filter(
+      (v) => v.status !== PLAYER_STATUS.spectating
+    ).length;
+    const width = this.session.width;
+    const height = this.session.height;
+    // console.log([...this.session.clients]);
 
     this.gameState = {
-      color: "grey",
-      pos: { x: 0, y: 0 },
-      vel: { x: 0, y: 0 },
+      color: COLOR[countPlayers],
+      pos: startPosition(width, height, countPlayers),
+      vel: VELOCITY[Object.keys(VELOCITY)[countPlayers]],
       snake: [],
-      grid: { x: GRID_WIDTH, y: GRID_HEIGHT },
+      grid: { x: width, y: height },
     };
   }
   /**

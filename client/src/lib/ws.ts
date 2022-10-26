@@ -1,13 +1,15 @@
-// Import the function which initializes a new mutable store.
 import { board } from '$lib/stores/board';
 import { state } from '$lib/stores/state';
+import { TYPE } from './constants';
 
-// We also want to connect to websockets.  Svelte does
-// server-side rendering _really well_ out of the box, so
-// we will export a function that can be called by our root
-// component after mounting to connnect
 let ws: WebSocket;
-export const connect = (socketURL: string, params: any) => {
+/**
+ * Create a websocket connection
+ * @param {string} socketURL 
+ * @param params 
+ * @returns 
+ */
+export const connect = (socketURL: string, params: Record<string, unknown>) => {
 	console.log('url: ' + socketURL);
 
 	ws = new WebSocket(socketURL);
@@ -21,41 +23,46 @@ export const connect = (socketURL: string, params: any) => {
 
 	ws.addEventListener('open', () => {
 		// TODO: Set up ping/pong, etc.
-		console.log('Connected! lets join ' + params.roomName);
+		console.log('Connected! lets join ' + params.room);
 		ws.send(JSON.stringify({ type: 'join-room', params }));
 	});
 
-	ws.addEventListener('message', (message: any) => {
+	ws.addEventListener('message', (message) => {
 		const data = JSON.parse(message.data);
 		console.log(data);
 
 		switch (data.type) {
-			case 'game-state':
+			case TYPE.gameState:
 				board.set(data.msg);
 				break;
-			case 'player-status':
-				state.setPlayerState(data.msg);
+			case TYPE.playerStatus:
+				state.setPlayerStatus(data.msg);
 				break;
-			case 'game-status':
-				state.setGameState(data.msg);
+			case TYPE.gameStatus:
+				state.setGameStatus(data.msg);
 				break;
-			case 'game-started':
+			case TYPE.joinRoom:
+				state.update((state) => ({ ...state, board: { width: data.width, height: data.height } }));
 				break;
-			case 'chat-message':
+			case TYPE.chatMessage:
 				state.update((state) => ({ ...state, messages: [data.msg].concat(state.messages) }));
 				break;
+			case TYPE.error:
+				state.update((state) => ({ ...state, error: data.msg }));
+				break
 			default:
-				state.update((state) => ({ ...state, items: [data].concat(state.items) }));
+				console.log('unknown emit from server');
 				break;
 		}
 	});
 
-	ws.addEventListener('close', (_message: any) => {
-		console.log('Disconnected!');
+	ws.addEventListener('close', (message) => {
+		console.log('Disconnected:', message);
+		//state.update((state) => ({ ...state, error: message }));
 	});
 
-	ws.addEventListener('error', (err: any) => {
-		console.log(err);
+	ws.addEventListener('error', (err) => {
+		console.log('websocket error:', err);
 	});
 };
 

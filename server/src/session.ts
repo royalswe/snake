@@ -1,22 +1,19 @@
-import type { Cell, GameState } from './types/gameState';
+import type { Cell, GameState } from './models/gameState';
+import type { UrlParams } from './models/urlParams';
 import type Client from './client';
-import {
-  PLAYER_STATUS,
-  COUNT_DOWN,
-  GRID_WIDTH,
-  GRID_HEIGHT,
-  GAME_STATUS,
-} from "./constants/constants";
+import { PLAYER_STATUS, COUNT_DOWN, GAME_STATUS } from "./constants/constants";
 import { isEveryStatusSame } from "./helpers/utils";
 
 export default class Session {
-  room: string;
+  room!: string;
+  width!: number;
+  height!: number;
   clients: Set<Client>;
   status: string;
   timer: any;
 
-  constructor(room: string) {
-    this.room = room;
+  constructor(params: UrlParams) {
+    Object.assign(this, params)
     this.clients = new Set();
     this.status = "waiting";
     this.timer = null;
@@ -27,6 +24,7 @@ export default class Session {
   countDown(duration = COUNT_DOWN) {
     clearTimeout(this.timer);
     return new Promise((resolve, reject) => {
+
       setTimeout(() => {
         if (!isEveryStatusSame(this.clients, PLAYER_STATUS.ready)) {
           return reject;
@@ -76,7 +74,7 @@ export default class Session {
       state.pos.x += state.vel.x;
 
       for (const c of this.clients) {
-        if (isCollide({ y: state.pos.y, x: state.pos.x }, c.gameState)) {
+        if (this.isCollide({ y: state.pos.y, x: state.pos.x }, c.gameState)) {
           client.status = PLAYER_STATUS.lost;
           //console.log(this.clients);
           const winner = [...this.clients].filter(
@@ -95,6 +93,21 @@ export default class Session {
   }
   // H
   // I
+  isCollide({ y, x }: Cell, stateB: GameState) {
+    // console.log(id, idB, x, stateB.pos.x, y, stateB.pos.y);
+    // if (id !== idB && x === stateB.pos.x && y === stateB.pos.y) {
+    // 	console.log('hits head');
+    // 	return true; // head hits head
+    // }
+
+    if (stateB.snake.some((o) => o.x === x && o.y === y)) {
+      return true; // snake hits snake
+    }
+    //console.log('väggen', this.width, this.height);
+
+    // snake hits wall
+    return x >= this.width || y >= this.height || x < 0 || y < 0;
+  }
   // J
   join(client: Client) {
     for (const c of this.clients) {
@@ -114,18 +127,4 @@ export default class Session {
     this.clients.delete(client);
     console.log("client delete", client);
   }
-}
-
-
-function isCollide({ x, y }: Cell, stateB: GameState) {
-  // console.log(id, idB, x, stateB.pos.x, y, stateB.pos.y);
-  // if (id !== idB && x === stateB.pos.x && y === stateB.pos.y) {
-  // 	console.log('hits head');
-  // 	return true; // head hits head
-  // }
-  if (stateB.snake.some((o) => o.x === x && o.y === y)) {
-    return true; // snake hits snake
-  }
-  // snake hits wall
-  return x >= GRID_WIDTH || y >= GRID_HEIGHT || x < 0 || y < 0;
 }

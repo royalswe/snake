@@ -1,32 +1,29 @@
 import { writable } from 'svelte/store';
 
-type GameState = 'waiting' | 'running' | 'count-down';
-type PlayeState = 'spectating' | 'joined' | 'ready' | 'running';
+type GameStatus = 'waiting' | 'running' | 'count-down';
+type PlayeStatus = 'spectating' | 'joined' | 'ready' | 'running';
 
-type Item = {
-	id: string;
-	content: string;
-};
+type Board = { width: number, height: number };
 
 type State = {
-	items: Array<Item>;
+	board: Board
 	messages: Array<string>;
-	gameState: GameState;
-	playerState: PlayeState;
+	gameStatus: GameStatus;
+	playerStatus: PlayeStatus;
 	error?: string;
 };
 
 const _state = writable<State>({
-	items: [],
+	board: {} as Board,
 	messages: [],
-	gameState: 'waiting',
-	playerState: 'spectating'
+	gameStatus: 'waiting',
+	playerStatus: 'spectating'
 });
 
 export const state = {
 	subscribe: _state.subscribe,
 	update: _state.update,
 	set: _state.set,
-	setGameState: (value: GameState) => state.update((s) => ({ ...s, gameState: value })),
-	setPlayerState: (value: PlayeState) => state.update((s) => ({ ...s, playerState: value }))
+	setGameStatus: (value: GameStatus) => state.update((s) => ({ ...s, gameStatus: value })),
+	setPlayerStatus: (value: PlayeStatus) => state.update((s) => ({ ...s, playerStatus: value }))
 };

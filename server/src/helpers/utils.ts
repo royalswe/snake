@@ -12,9 +12,14 @@ export function makeid() {
 
 export const isEveryStatusSame = (set: Set<Client>, status: string) => [...set].every((obj) => obj.status === status);
 
-export const velocity = {
-	ArrowLeft: { x: -1, y: 0 },
-	ArrowDown: { x: 0, y: 1 },
-	ArrowRight: { x: 1, y: 0 },
-	ArrowUp: { x: 0, y: -1 }
+export function startPosition(width: number, height: number, key: number) {
+	const map = {
+		0: { x: 3, y: 3 },
+		1: { x: width - 3, y: height - 3 },
+		2: { x: 3, y: height - 3 },
+		3: { x: width - 3, y: 3 },
+	}
+
+	return map[key] || console.error(key + ' is not valid key for start position');
+
 };

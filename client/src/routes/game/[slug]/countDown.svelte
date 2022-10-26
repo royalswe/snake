@@ -28,5 +28,7 @@
 		font-size: 100px;
 		position: absolute;
 		color: #85ba51;
+		top: 50%;
+		left: 50%;
 	}
 </style>

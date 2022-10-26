@@ -3,19 +3,22 @@
 </script>
 
 <script lang="ts">
-	import { onMount, getContext } from 'svelte';
-	import { COLOURS } from './constants';
-	import type { GameState } from '$lib/types';
+	import type { GameState } from '$models/gameState';
+	import { onMount } from 'svelte';
+	import { COLOURS } from '$lib/constants';
+	import { state } from '$lib/stores/state';
 	import { board } from '$lib/stores/board';
 
 	export let parentWidth: number;
 	export let parentHeight: number;
-	let width: number = 46;
-	let height: number = 30;
+	let width: number;
+	let height: number;
 	let grid: any;
 
 	let canvas: HTMLCanvasElement;
 	let ctx: any;
+
+	$: (height = $state.board.height), (width = $state.board.width) && drawCanvas();
 
 	const delay = (func: Function, delay: number) => {
 		let timer: any;
@@ -43,6 +46,9 @@
 		});
 		ctx = canvas.getContext('2d');
 
+		// let { boardWidth, boardHeight } = getContext(BOARD);
+		// console.log(boardWidth, boardHeight);
+
 		setTimeout(() => {
 			drawCanvas();
 		});
@@ -58,7 +64,7 @@
 
 		const w = grid.width;
 		const h = grid.height;
-		const step = (w + h) / 76;
+		const step = (w + h) / (width + height);
 
 		ctx.canvas.width = w;
 		ctx.canvas.height = h;

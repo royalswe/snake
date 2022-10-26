@@ -7,8 +7,8 @@ const boardStore = () => {
 		subscribe,
 		update,
 		set,
-		add: () => update((val) => val++),
-		reset: () => set(0)
+		// add: () => update((val) => val++),
+		// reset: () => set(0)
 	};
 };
 

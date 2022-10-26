@@ -1,4 +1,6 @@
 import uWebSockets from "uWebSockets.js";
+import { getErrorMessage, reportError } from './helpers/errorHandling';
+import { TYPE } from './constants/constants';
 import { game, close } from "./games";
 import { lobby } from "./lobby";
 
@@ -37,10 +39,16 @@ uws.ws("/*", {
 
   open,
   message: (ws, arrayBuffer, isBinary) => {
-    if (ws.url === "/room") {
-      return game(ws, arrayBuffer, isBinary);
-    } else if (ws.url === "/lobby") {
-      return lobby(ws, arrayBuffer, isBinary);
+    try {
+      if (ws.url === "/room") {
+        return game(ws, arrayBuffer, isBinary);
+      }
+      else if (ws.url === "/lobby") {
+        return lobby(ws, arrayBuffer, isBinary);
+      }
+    } catch (err: unknown) {
+      reportError({ message: getErrorMessage(err) });
+      return ws.send(JSON.stringify({ type: TYPE.error, msg: getErrorMessage(err) }), isBinary, true);
     }
   },
   close,
