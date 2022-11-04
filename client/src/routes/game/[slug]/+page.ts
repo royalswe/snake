@@ -1,5 +1,7 @@
 import type { LoadEvent } from '@sveltejs/kit';
 import type { UrlParams } from '$models/urlParams'
+//export const prerender = false;
+export const ssr = false;
 
 // TODO: validate params
 export async function load({ params, url }: LoadEvent) {

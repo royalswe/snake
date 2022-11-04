@@ -39,13 +39,13 @@
 	}
 
 	onMount(async () => {
-		//connect('ws://localhost:3100/room');
-		connect(
-			(window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
-				location.hostname +
-				':3100/room',
-			params
-		);
+		connect('ws://localhost:3100/room', params);
+		// connect(
+		// (window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
+		// location.hostname +
+		// 		':3100/room',
+		// 	params
+		// );
 	});
 </script>
 
@@ -86,8 +86,19 @@
 			'header header' 75px
 			'sidebar main' minmax(auto, calc(100vh - 75px)) / 350px auto;
 	}
+	@media (width < 600px) {
+		.wrapper {
+			height: 100%;
+			display: grid;
+			grid-template:
+				'header' 75px
+				'main' auto
+				'sidebar' minmax(100px, auto);
+		}
+	}
 	header {
 		grid-area: header;
+		color: antiquewhite;
 		background-color: blue;
 	}
 	sidebar {

@@ -3,14 +3,13 @@ import Client from "./client";
 import Session from "./session";
 import { isEveryStatusSame } from "./helpers/utils";
 import { WebSocket } from 'uWebSockets.js';
+import { VELOCITY } from './constants/constants'
+import { Event } from './enums/event'
 import {
   FRAME_RATE,
   GAME_STATUS,
   PLAYER_STATUS,
-  TYPE,
-  VELOCITY,
-} from "./constants/constants";
-import { type } from 'os';
+} from "./constants/sharedConstants";
 
 const decoder = new TextDecoder("utf-8");
 const sessions = new Map();
@@ -51,7 +50,7 @@ export const game = (ws: WebSocket, message: BufferSource, isBinary: boolean) =>
   const clientMsg = JSON.parse(decoder.decode(message));
 
   switch (clientMsg.type) {
-    case TYPE.joinRoom: {
+    case Event.joinRoom: {
       const params = clientMsg.params;
       const roomName = params.room;
 
@@ -63,25 +62,26 @@ export const game = (ws: WebSocket, message: BufferSource, isBinary: boolean) =>
         throw Error("Could not join game session"); // Could not join game session
       }
 
-      ws.client.send({ type: TYPE.joinRoom, width: session.width, height: session.height }, isBinary);
+      ws.client.roomEmit({ type: Event.joinRoom, width: session.width, height: session.height }, isBinary);
       break;
     }
 
-    case TYPE.joinGame: {
+    case Event.joinGame: {
       client = ws.client;
       client.setGamestate();
       client.status = PLAYER_STATUS.joined
-      client.send(
-        {
-          type: TYPE.playerStatus,
-          msg: PLAYER_STATUS.joined,
-        },
-        isBinary
-      );
+      if (client.session.status === GAME_STATUS.countDown) {
+        // cancel timeout on client
+        client.session.timer.refresh()
+      }
+      client.roomEmit({
+        type: Event.playerStatus,
+        msg: PLAYER_STATUS.joined,
+      }, isBinary);
       break;
     }
 
-    case TYPE.playerReady: {
+    case Event.playerReady: {
       const session = ws.client.session;
       if (!session) {
         throw Error("can not be ready if not joined session");
@@ -90,14 +90,14 @@ export const game = (ws: WebSocket, message: BufferSource, isBinary: boolean) =>
         throw Error("game already started or you have not join the game"); // if game is allready started or player clicked ready when not joined
       }
       ws.client.status = PLAYER_STATUS.ready;
-      ws.client.send(
-        { type: TYPE.playerStatus, msg: ws.client.status },
+      ws.client.roomEmit(
+        { type: Event.playerStatus, msg: ws.client.status },
         isBinary
       );
 
       if (isEveryStatusSame(session.clients, PLAYER_STATUS.ready)) {
         ws.client.roomEmit({
-          type: TYPE.gameStatus,
+          type: Event.gameStatus,
           msg: GAME_STATUS.countDown,
         }, isBinary);
         // start count down
@@ -108,7 +108,9 @@ export const game = (ws: WebSocket, message: BufferSource, isBinary: boolean) =>
               const winner = session.snakeGrow();
 
               if (winner) {
-                ws.client.roomEmit({ type: TYPE.gameOver }, isBinary);
+                console.log(winner);
+
+                ws.client.roomEmit({ type: Event.gameOver, msg: winner.gameState }, isBinary);
                 cancelTimer();
               } else {
                 ws.client.roomEmit({
@@ -122,12 +124,12 @@ export const game = (ws: WebSocket, message: BufferSource, isBinary: boolean) =>
       }
       break;
     }
-    case TYPE.movement: {
+    case Event.movement: {
       ws.client.gameState.vel = VELOCITY[clientMsg.msg];
       break;
     }
 
-    case TYPE.chatMessage: {
+    case Event.chatMessage: {
       client.roomEmit({
         type: "chat-message",
         msg: clientMsg.message,

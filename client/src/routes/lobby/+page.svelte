@@ -3,13 +3,12 @@
 	import { onMount } from 'svelte';
 
 	onMount(async () => {
-		//connect('ws://localhost:3100/room');
-		connect(
-			(window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
-				location.hostname +
-				':3100/looby',
-			'lobby'
-		);
+		connect('ws://localhost:3100/looby');
+		// connect(
+		// 	(window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
+		// 		location.hostname +
+		// 		':3100/looby'
+		// );
 	});
 	let gameCode: string;
 </script>
@@ -31,12 +30,12 @@
 		<div id="initialScreen" class="h-100">
 			<div class="d-flex flex-column align-items-center justify-content-center h-100">
 				<h1>Multiplayer Snake</h1>
-				<a href="/game" class="btn btn-success"> Create New Game </a>
+				<!-- <a href="/game" class="btn btn-success"> Create New Game </a> -->
 				<div>OR</div>
 				<div class="form-group">
 					<input type="text" bind:value={gameCode} placeholder="enter game code" />
 				</div>
-				<a href="game/{gameCode}" class="btn btn-success"> Join Game </a>
+				<a href="/game/{gameCode}?board=46:30" class="btn btn-success"> Join Game </a>
 			</div>
 		</div>
 	</div>

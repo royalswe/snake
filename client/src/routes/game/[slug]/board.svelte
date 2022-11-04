@@ -17,9 +17,8 @@
 
 	let canvas: HTMLCanvasElement;
 	let ctx: any;
-
-	$: (height = $state.board.height), (width = $state.board.width) && drawCanvas();
-
+	$: (height || width) && drawCanvas();
+	$: (height = $state.board.height), (width = $state.board.width);
 	const delay = (func: Function, delay: number) => {
 		let timer: any;
 		return () => {
@@ -49,9 +48,9 @@
 		// let { boardWidth, boardHeight } = getContext(BOARD);
 		// console.log(boardWidth, boardHeight);
 
-		setTimeout(() => {
-			drawCanvas();
-		});
+		// setTimeout(() => {
+		// 	drawCanvas();
+		// });
 
 		window.addEventListener('resize', delay(drawCanvas, 100));
 		return () => {

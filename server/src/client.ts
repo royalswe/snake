@@ -2,7 +2,8 @@ import type { WebSocket } from 'uWebSockets.js';
 import type { GameState } from './models/gameState';
 import type Session from './session';
 import uws from "./uws";
-import { COLOR, PLAYER_STATUS, VELOCITY } from "./constants/constants";
+import { COLOR, VELOCITY } from "./constants/constants";
+import { PLAYER_STATUS } from './constants/sharedConstants';
 import { startPosition } from './helpers/utils';
 
 export default class Client {
@@ -23,6 +24,7 @@ export default class Client {
   }
 
   setGamestate() {
+    // TODO: countPlayer wont work in real world
     const countPlayers: number = [...this.session.clients].filter(
       (v) => v.status !== PLAYER_STATUS.spectating
     ).length;
@@ -41,7 +43,7 @@ export default class Client {
   /**
    * Send to local client only
    */
-  send(message: object, isBinary = true, compress = true) {
+  send(message: Record<string, any>, isBinary = true, compress = true) {
     const ok = this.ws.send(JSON.stringify(message), isBinary, compress);
     if (!ok) {
       console.error("problem sending client msg from " + this.room);
@@ -50,13 +52,15 @@ export default class Client {
   /**
    * Send to all clients in the same session except local user
    */
-  broadcast(message: object, isBinary = true, compress = true) {
+  broadcast(message: Record<string, any>, isBinary = true, compress = true) {
+    message.clientId = this.id;
     this.ws.publish(this.room, JSON.stringify(message), isBinary, compress); // to all except the sender
   }
   /**
    * Send to all clients in room
    */
-  roomEmit(message: object, isBinary = true, compress = true) {
+  roomEmit(message: Record<string, any>, isBinary = true, compress = true) {
+    message.clientId = this.id;
     uws.publish(this.room, JSON.stringify(message), isBinary, compress); // to all
   }
 }

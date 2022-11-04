@@ -24,6 +24,10 @@ export const state = {
 	subscribe: _state.subscribe,
 	update: _state.update,
 	set: _state.set,
-	setGameStatus: (value: GameStatus) => state.update((s) => ({ ...s, gameStatus: value })),
-	setPlayerStatus: (value: PlayeStatus) => state.update((s) => ({ ...s, playerStatus: value }))
+	setGameStatus: (value: GameStatus) => _state.update((s) => ({ ...s, gameStatus: value })),
+	setPlayerStatus: (value: PlayeStatus) => _state.update((s) => ({ ...s, playerStatus: value })),
+	setCounter: value => _state.update(self => {
+		self.playerStatus = value
+		return self  //!\\ this is important! Don't forget it
+	})
 };

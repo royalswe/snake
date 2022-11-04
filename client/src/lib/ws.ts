@@ -1,6 +1,7 @@
 import { board } from '$lib/stores/board';
 import { state } from '$lib/stores/state';
-import { TYPE } from './constants';
+import { PLAYER_STATUS } from './constants';
+import { Event } from '$enums/event'
 
 let ws: WebSocket;
 /**
@@ -9,7 +10,7 @@ let ws: WebSocket;
  * @param params 
  * @returns 
  */
-export const connect = (socketURL: string, params: Record<string, unknown>) => {
+export const connect = (socketURL: string, params?: Record<string, unknown>) => {
 	console.log('url: ' + socketURL);
 
 	ws = new WebSocket(socketURL);
@@ -23,8 +24,12 @@ export const connect = (socketURL: string, params: Record<string, unknown>) => {
 
 	ws.addEventListener('open', () => {
 		// TODO: Set up ping/pong, etc.
-		console.log('Connected! lets join ' + params.room);
-		ws.send(JSON.stringify({ type: 'join-room', params }));
+		console.log('open :)');
+
+		if (params) {
+			console.log('Connected! lets join ' + params.room);
+			ws.send(JSON.stringify({ type: 'join-room', params }));
+		}
 	});
 
 	ws.addEventListener('message', (message) => {
@@ -32,22 +37,28 @@ export const connect = (socketURL: string, params: Record<string, unknown>) => {
 		console.log(data);
 
 		switch (data.type) {
-			case TYPE.gameState:
+			case Event.gameState:
 				board.set(data.msg);
 				break;
-			case TYPE.playerStatus:
+			case Event.playerStatus:
 				state.setPlayerStatus(data.msg);
 				break;
-			case TYPE.gameStatus:
+			case Event.gameStatus:
 				state.setGameStatus(data.msg);
 				break;
-			case TYPE.joinRoom:
+			case Event.joinRoom:
 				state.update((state) => ({ ...state, board: { width: data.width, height: data.height } }));
 				break;
-			case TYPE.chatMessage:
+			case Event.chatMessage:
 				state.update((state) => ({ ...state, messages: [data.msg].concat(state.messages) }));
 				break;
-			case TYPE.error:
+			case Event.gameOver:
+				//state.setGameStatus(GAME_STATUS.waiting);
+				state.setCounter(PLAYER_STATUS.joined);
+				//state.playerStatus = 'hej'
+				console.log('winner is:', data.msg?.gamestate?.color);
+				break;
+			case Event.error:
 				state.update((state) => ({ ...state, error: data.msg }));
 				break
 			default:

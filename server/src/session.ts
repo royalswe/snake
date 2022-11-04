@@ -1,7 +1,7 @@
 import type { Cell, GameState } from './models/gameState';
 import type { UrlParams } from './models/urlParams';
 import type Client from './client';
-import { PLAYER_STATUS, COUNT_DOWN, GAME_STATUS } from "./constants/constants";
+import { PLAYER_STATUS, COUNT_DOWN, GAME_STATUS } from "./constants/sharedConstants";
 import { isEveryStatusSame } from "./helpers/utils";
 
 export default class Session {
@@ -29,6 +29,8 @@ export default class Session {
         if (!isEveryStatusSame(this.clients, PLAYER_STATUS.ready)) {
           return reject;
         }
+
+        this.status = GAME_STATUS.running;
         resolve({
           type: "game-status",
           msg: GAME_STATUS.running,
@@ -65,8 +67,7 @@ export default class Session {
     //((const client = this.clients.keys().next().value;
     for (const client of this.clients) {
       const state = client.gameState;
-      if (client.status !== PLAYER_STATUS.ready && !state) {
-        console.log(client.status, "is game over");
+      if (client.status !== PLAYER_STATUS.ready || !state) {
         return;
       }
 
@@ -75,14 +76,14 @@ export default class Session {
 
       for (const c of this.clients) {
         if (this.isCollide({ y: state.pos.y, x: state.pos.x }, c.gameState)) {
-          client.status = PLAYER_STATUS.lost;
+          client.status = PLAYER_STATUS.joined;
           //console.log(this.clients);
-          const winner = [...this.clients].filter(
-            (v) => v.status === PLAYER_STATUS.ready
-          );
+          const winner = [...this.clients].filter((v) => v.status === PLAYER_STATUS.ready);
           if (winner.length <= 1) {
             console.log("winner is", winner);
-            return true;
+            this.status = GAME_STATUS.waiting;
+
+            return winner.length ? winner : client;
           }
         }
       }

@@ -13,6 +13,7 @@
 			"$lib":["src/lib"],
 			"$lib/*":["src/lib/*"], 
 			"$models/*": ["../server/src/models/*"],
+			"$enums/*": ["../server/src/enums/*"],
 		 },
 
 	}

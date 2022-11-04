@@ -11,7 +11,7 @@
 <div class="overlay">
 	<div class="popup">
 		<h2>Ouch...</h2>
-		<a href="#" class="close" on:click={clearErrors}>&times;</a>
+		<a href="/#" class="close" on:click={clearErrors}>&times;</a>
 		<div class="content">
 			{errorMsg}
 		</div>
