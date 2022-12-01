@@ -39,13 +39,13 @@
 	}
 
 	onMount(async () => {
-		connect('ws://localhost:3100/room', params);
-		// connect(
-		// (window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
-		// location.hostname +
-		// 		':3100/room',
-		// 	params
-		// );
+//		connect('ws://localhost:5400/room', params);
+		connect(
+		(window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
+		location.hostname +
+				':5400/room',
+			params
+		);
 	});
 </script>
 
@@ -108,5 +108,7 @@
 	main {
 		grid-area: main;
 		background-color: grey;
+		border: solid yellow 3px;
+		overflow: hidden;
 	}
 </style>

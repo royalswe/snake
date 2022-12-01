@@ -103,15 +103,24 @@ export const game = (ws: WebSocket, message: BufferSource, isBinary: boolean) =>
         // start count down
         session
           .countDown().then((value: object) => {
+
             ws.client.roomEmit(value, isBinary);
             const cancelTimer = session.gameIntervall(() => {
               const winner = session.snakeGrow();
 
               if (winner) {
-                console.log(winner);
+              console.log(winner);
 
                 ws.client.roomEmit({ type: Event.gameOver, msg: winner.gameState }, isBinary);
                 cancelTimer();
+                // reset snakes
+                [...session.clients].forEach(client => {
+                  const startPosition = client.gameState.snake[0];
+                  client.gameState.snake = [];
+                  client.gameState.pos = startPosition                  
+                });
+
+
               } else {
                 ws.client.roomEmit({
                   type: "game-state",

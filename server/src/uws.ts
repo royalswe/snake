@@ -5,7 +5,7 @@ import { game, close } from "./games";
 import { lobby } from "./lobby";
 
 const uws = uWebSockets.App();
-const port = process.env.PORT || 3100;
+const port = process.env.PORT || 5300;
 
 const open = (ws: any) => {
   console.log("A WebSocket connected with URL: " + ws.url);
@@ -52,6 +52,8 @@ uws.ws("/*", {
     }
   },
   close,
+  }).get('/*', (res, req) => {
+    res.writeStatus('200 OK').writeHeader('IsExample', 'Yes').end('Hello there!');
 });
 
 uws.listen(+port, (token) => {

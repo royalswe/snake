@@ -29,6 +29,8 @@
 
 	function calculateAspectRatioFit() {
 		const ratio = Math.min(parentWidth / width, parentHeight / height);
+		console.log(parentWidth,width, parentHeight,height);
+		
 		return { width: width * ratio, height: height * ratio };
 	}
 
