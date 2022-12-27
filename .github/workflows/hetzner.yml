@@ -23,6 +23,7 @@ jobs:
         key: ${{ secrets.PRIVATE_KEY }}
         port: 22
         script: |
-          cd ~/home/royal/www/snake
-          git pull origin main
-          git status
+          whoami
+          cd /home/royal/www/snake
+          # git pull origin main
+          # git status
