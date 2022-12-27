@@ -105,10 +105,10 @@
 		}
 	}
 
-	function drawBorder(xPos, yPos, w, h, thickness = 1) {
-		ctx.fillStyle = '#000';
-		ctx.fillRect(xPos - thickness, yPos - thickness, w + thickness * 2, h + thickness * 2);
-	}
+	// function drawBorder(xPos, yPos, w, h, thickness = 1) {
+	// 	ctx.fillStyle = '#000';
+	// 	ctx.fillRect(xPos - thickness, yPos - thickness, w + thickness * 2, h + thickness * 2);
+	// }
 </script>
 
 <canvas bind:this={canvas} />

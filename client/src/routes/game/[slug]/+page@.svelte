@@ -39,11 +39,10 @@
 	}
 
 	onMount(async () => {
-//		connect('ws://localhost:5400/room', params);
 		connect(
 		(window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
 		location.hostname +
-				':5400/room',
+				':5300/room',
 			params
 		);
 	});

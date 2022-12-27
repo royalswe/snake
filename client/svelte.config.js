@@ -16,7 +16,7 @@ const config = {
 			// these options are set automatically — see below
 			pages: 'build',
 			assets: 'build',
-			fallback: null,
+			fallback: '200.html',
 			precompress: false,
 			strict: true
 		}),
@@ -24,7 +24,6 @@ const config = {
 		alias: {
 			$src: path.resolve('./src'),
 			$routes: path.resolve('./src/routes'),
-			$enums: path.resolve('../server/src/enums')
 		}
 	}
 };

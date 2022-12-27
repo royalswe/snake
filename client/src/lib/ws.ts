@@ -1,7 +1,7 @@
 import { board } from '$lib/stores/board';
 import { state } from '$lib/stores/state';
-import { PLAYER_STATUS } from './constants';
-import { Event } from '$enums/event'
+import { PLAYER_STATUS } from '$lib/constants';
+import { EVENT } from '$lib/constants'
 
 let ws: WebSocket;
 /**
@@ -37,28 +37,28 @@ export const connect = (socketURL: string, params?: Record<string, unknown>) => 
 		console.log(data);
 
 		switch (data.type) {
-			case Event.gameState:
+			case EVENT.gameState:
 				board.set(data.msg);
 				break;
-			case Event.playerStatus:
+			case EVENT.playerStatus:
 				state.setPlayerStatus(data.msg);
 				break;
-			case Event.gameStatus:
+			case EVENT.gameStatus:
 				state.setGameStatus(data.msg);
 				break;
-			case Event.joinRoom:
+			case EVENT.joinRoom:
 				state.update((state) => ({ ...state, board: { width: data.width, height: data.height } }));
 				break;
-			case Event.chatMessage:
+			case EVENT.chatMessage:
 				state.update((state) => ({ ...state, messages: [data.msg].concat(state.messages) }));
 				break;
-			case Event.gameOver:
+			case EVENT.gameOver:
 				//state.setGameStatus(GAME_STATUS.waiting);
 				state.setCounter(PLAYER_STATUS.joined);
 				//state.playerStatus = 'hej'
 				console.log('winner is:', data.msg?.gamestate?.color);
 				break;
-			case Event.error:
+			case EVENT.error:
 				state.update((state) => ({ ...state, error: data.msg }));
 				break
 			default:
