@@ -2,3 +2,4 @@
 <h2>
 	<a href="/lobby">Till lobbyn</a>
 </h2>
+<p>just a test</p>
