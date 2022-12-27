@@ -4,7 +4,7 @@ import Session from "./session";
 import { isEveryStatusSame } from "./helpers/utils";
 import { WebSocket } from 'uWebSockets.js';
 import { VELOCITY } from './constants/constants'
-import { Event } from './enums/event'
+import { EVENT } from './constants/sharedConstants'
 import {
   FRAME_RATE,
   GAME_STATUS,
@@ -50,7 +50,7 @@ export const game = (ws: WebSocket, message: BufferSource, isBinary: boolean) =>
   const clientMsg = JSON.parse(decoder.decode(message));
 
   switch (clientMsg.type) {
-    case Event.joinRoom: {
+    case EVENT.joinRoom: {
       const params = clientMsg.params;
       const roomName = params.room;
 
@@ -62,11 +62,11 @@ export const game = (ws: WebSocket, message: BufferSource, isBinary: boolean) =>
         throw Error("Could not join game session"); // Could not join game session
       }
 
-      ws.client.roomEmit({ type: Event.joinRoom, width: session.width, height: session.height }, isBinary);
+      ws.client.roomEmit({ type: EVENT.joinRoom, width: session.width, height: session.height }, isBinary);
       break;
     }
 
-    case Event.joinGame: {
+    case EVENT.joinGame: {
       client = ws.client;
       client.setGamestate();
       client.status = PLAYER_STATUS.joined
@@ -75,13 +75,13 @@ export const game = (ws: WebSocket, message: BufferSource, isBinary: boolean) =>
         client.session.timer.refresh()
       }
       client.roomEmit({
-        type: Event.playerStatus,
+        type: EVENT.playerStatus,
         msg: PLAYER_STATUS.joined,
       }, isBinary);
       break;
     }
 
-    case Event.playerReady: {
+    case EVENT.playerReady: {
       const session = ws.client.session;
       if (!session) {
         throw Error("can not be ready if not joined session");
@@ -91,13 +91,13 @@ export const game = (ws: WebSocket, message: BufferSource, isBinary: boolean) =>
       }
       ws.client.status = PLAYER_STATUS.ready;
       ws.client.roomEmit(
-        { type: Event.playerStatus, msg: ws.client.status },
+        { type: EVENT.playerStatus, msg: ws.client.status },
         isBinary
       );
 
       if (isEveryStatusSame(session.clients, PLAYER_STATUS.ready)) {
         ws.client.roomEmit({
-          type: Event.gameStatus,
+          type: EVENT.gameStatus,
           msg: GAME_STATUS.countDown,
         }, isBinary);
         // start count down
@@ -111,7 +111,7 @@ export const game = (ws: WebSocket, message: BufferSource, isBinary: boolean) =>
               if (winner) {
               console.log(winner);
 
-                ws.client.roomEmit({ type: Event.gameOver, msg: winner.gameState }, isBinary);
+                ws.client.roomEmit({ type: EVENT.gameOver, msg: winner.gameState }, isBinary);
                 cancelTimer();
                 // reset snakes
                 [...session.clients].forEach(client => {
@@ -133,12 +133,12 @@ export const game = (ws: WebSocket, message: BufferSource, isBinary: boolean) =>
       }
       break;
     }
-    case Event.movement: {
+    case EVENT.movement: {
       ws.client.gameState.vel = VELOCITY[clientMsg.msg];
       break;
     }
 
-    case Event.chatMessage: {
+    case EVENT.chatMessage: {
       client.roomEmit({
         type: "chat-message",
         msg: clientMsg.message,

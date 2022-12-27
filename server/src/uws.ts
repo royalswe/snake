@@ -1,6 +1,6 @@
 import uWebSockets from "uWebSockets.js";
 import { getErrorMessage, reportError } from './helpers/errorHandling';
-import { Event } from './enums/event'
+import { EVENT } from './constants/sharedConstants'
 import { game, close } from "./games";
 import { lobby } from "./lobby";
 
@@ -48,7 +48,7 @@ uws.ws("/*", {
       }
     } catch (err: unknown) {
       reportError({ message: getErrorMessage(err) });
-      return ws.send(JSON.stringify({ type: Event.error, msg: getErrorMessage(err) }), isBinary, true);
+      return ws.send(JSON.stringify({ type: EVENT.error, msg: getErrorMessage(err) }), isBinary, true);
     }
   },
   close,
