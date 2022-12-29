@@ -3,14 +3,16 @@
 	import { onMount } from 'svelte';
 
 	onMount(async () => {
-		connect('ws://localhost:3100/looby');
-		// connect(
-		// 	(window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
-		// 		location.hostname +
-		// 		':3100/looby'
-		// );
+		connect(
+			'wss://' +
+				location.hostname +
+				(location.hostname === 'localhost' ? ':5300' : '') +
+				'/api/lobby'
+		);
 	});
 	let gameCode: string;
+
+
 </script>
 
 <svelte:head>
@@ -36,6 +38,7 @@
 					<input type="text" bind:value={gameCode} placeholder="enter game code" />
 				</div>
 				<a href="/game/{gameCode}?board=46:30" class="btn btn-success"> Join Game </a>
+				
 			</div>
 		</div>
 	</div>

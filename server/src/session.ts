@@ -80,7 +80,6 @@ export default class Session {
           //console.log(this.clients);
           const winner = [...this.clients].filter((v) => v.status === PLAYER_STATUS.ready);
           if (winner.length <= 1) {
-            console.log("winner is", winner);
             this.status = GAME_STATUS.waiting;
 
             return winner.length ? winner : client;

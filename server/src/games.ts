@@ -12,7 +12,7 @@ import {
 } from "./constants/sharedConstants";
 
 const decoder = new TextDecoder("utf-8");
-const sessions = new Map();
+export const sessions = new Map();
 let client: Client;
 
 function createSession(params: UrlParams) {
@@ -62,7 +62,8 @@ export const game = (ws: WebSocket, message: BufferSource, isBinary: boolean) =>
         throw Error("Could not join game session"); // Could not join game session
       }
 
-      ws.client.roomEmit({ type: EVENT.joinRoom, width: session.width, height: session.height }, isBinary);
+      ws.client.send({ type: EVENT.joinRoom, width: session.width, height: session.height }, isBinary);
+      ws.client.broadcast({type: EVENT.chatMessage, msg: `${ws.client.id} joined the room`}, isBinary)
       break;
     }
 
@@ -95,6 +96,10 @@ export const game = (ws: WebSocket, message: BufferSource, isBinary: boolean) =>
         isBinary
       );
 
+      console.log('checka status');
+      
+      console.log(isEveryStatusSame(session.clients, PLAYER_STATUS.ready));
+      
       if (isEveryStatusSame(session.clients, PLAYER_STATUS.ready)) {
         ws.client.roomEmit({
           type: EVENT.gameStatus,

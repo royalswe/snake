@@ -6,6 +6,7 @@
 		"dev": "vite dev",
 		"start:dev": "nodemon",
 		"build": "vite build",
+		"move": "rm -rf ../../mongot_prod/snake.mongot.com/client && mv build ../../mongot_prod/snake.mongot.com/client",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
@@ -32,7 +33,5 @@
 		"tslib": "^2.4.1",
 		"typescript": "^4.9.4",
 		"vite": "^4.0.2"
-	},
-	"dependencies": {
 	}
 }

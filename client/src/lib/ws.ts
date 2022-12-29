@@ -1,5 +1,6 @@
 import { board } from '$lib/stores/board';
 import { state } from '$lib/stores/state';
+import { chat } from '$lib/stores/chat';
 import { PLAYER_STATUS } from '$lib/constants';
 import { EVENT } from '$lib/constants'
 
@@ -24,7 +25,6 @@ export const connect = (socketURL: string, params?: Record<string, unknown>) => 
 
 	ws.addEventListener('open', () => {
 		// TODO: Set up ping/pong, etc.
-		console.log('open :)');
 
 		if (params) {
 			console.log('Connected! lets join ' + params.room);
@@ -32,9 +32,8 @@ export const connect = (socketURL: string, params?: Record<string, unknown>) => 
 		}
 	});
 
-	ws.addEventListener('message', (message) => {
+	ws.addEventListener('message', (message) => {		
 		const data = JSON.parse(message.data);
-		console.log(data);
 
 		switch (data.type) {
 			case EVENT.gameState:
@@ -50,7 +49,7 @@ export const connect = (socketURL: string, params?: Record<string, unknown>) => 
 				state.update((state) => ({ ...state, board: { width: data.width, height: data.height } }));
 				break;
 			case EVENT.chatMessage:
-				state.update((state) => ({ ...state, messages: [data.msg].concat(state.messages) }));
+				chat.update((msg) => ({ ...msg, messages: [data.msg].concat(msg.messages) }));
 				break;
 			case EVENT.gameOver:
 				//state.setGameStatus(GAME_STATUS.waiting);
@@ -62,7 +61,7 @@ export const connect = (socketURL: string, params?: Record<string, unknown>) => 
 				state.update((state) => ({ ...state, error: data.msg }));
 				break
 			default:
-				console.log('unknown emit from server');
+				console.log('unknown emit from server', data);
 				break;
 		}
 	});

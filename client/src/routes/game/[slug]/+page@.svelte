@@ -5,7 +5,9 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { state } from '$lib/stores/state';
+	import { chat } from '$lib/stores/chat';
 	import { PLAYER_STATUS } from '$lib/constants';
+	import ColorModule from './colorModule.svelte';
 
 	const roomName = $page.data.room;
 	const params = $page.data;
@@ -40,9 +42,10 @@
 
 	onMount(async () => {
 		connect(
-		(window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
-		location.hostname +
-				':5300/room',
+			'wss://' +
+				location.hostname +
+				(location.hostname === 'localhost' ? ':5300' : '') +
+				'/api/room',
 			params
 		);
 	});
@@ -67,11 +70,20 @@
 		{:else if $state.playerStatus === 'joined'}
 			<button on:click={ready}>Ready</button>
 		{/if}
+
+		<h4>Chat</h4>
+		<ul>
+			{#each $chat.messages as message}
+				<li>{message}</li>
+			{/each}
+		</ul>
 	</sidebar>
 	<main>
 		<Snake />
 	</main>
-
+	{#if $state.error}
+		<ColorModule />
+	{/if}
 	{#if $state.error}
 		<ErrorModule errorMsg={$state.error} />
 	{/if}

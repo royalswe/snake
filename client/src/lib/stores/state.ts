@@ -7,7 +7,6 @@ type Board = { width: number, height: number };
 
 type State = {
 	board: Board
-	messages: Array<string>;
 	gameStatus: GameStatus;
 	playerStatus: PlayeStatus;
 	error?: string;
@@ -15,7 +14,6 @@ type State = {
 
 const _state = writable<State>({
 	board: {} as Board,
-	messages: [],
 	gameStatus: 'waiting',
 	playerStatus: 'spectating'
 });

@@ -4,17 +4,22 @@ import { EVENT } from './constants/sharedConstants'
 import { game, close } from "./games";
 import { lobby } from "./lobby";
 
-const uws = uWebSockets.App();
-const port = process.env.PORT || 5300;
+const port = 5300;
+
+const uws = uWebSockets.SSLApp({
+   key_file_name: process.env.NODE_ENV === "development" ? __dirname + "/misc/key.pem" : "/etc/letsencrypt/live/mongot.com/privkey.pem",
+   cert_file_name: process.env.NODE_ENV === "development" ? __dirname + "/misc/certificate.pem" : "/etc/letsencrypt/live/mongot.com/cert.pem"
+});
 
 const open = (ws: any) => {
-  console.log("A WebSocket connected with URL: " + ws.url);
+  //console.dir(ws, { depth: null }); 
+  
   ws.send(
     JSON.stringify({ type: "init", message: "Welcome to the snake game!" })
   );
 };
 
-uws.ws("/*", {
+uws.ws("/api/*", {
   idleTimeout: 32,
   maxBackpressure: 1024,
   maxPayloadLength: 512,
@@ -40,10 +45,10 @@ uws.ws("/*", {
   open,
   message: (ws, arrayBuffer, isBinary) => {
     try {
-      if (ws.url === "/room") {
+      if (ws.url === "/api/room") {        
         return game(ws, arrayBuffer, isBinary);
       }
-      else if (ws.url === "/lobby") {
+      else if (ws.url === "/api/lobby") {
         return lobby(ws, arrayBuffer, isBinary);
       }
     } catch (err: unknown) {
@@ -52,11 +57,11 @@ uws.ws("/*", {
     }
   },
   close,
-  }).get('/*', (res, req) => {
+  }).get('/api/*', (res, req) => {
     res.writeStatus('200 OK').writeHeader('IsExample', 'Yes').end('Hello there!');
 });
 
-uws.listen(+port, (token) => {
+uws.listen(port, (token) => {
   token
     ? console.log(`Listening to uws ${port}`)
     : console.log(`Failed to listen uws port ${port}`);
