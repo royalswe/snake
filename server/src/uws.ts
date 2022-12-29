@@ -6,16 +6,16 @@ import Lobby from './lobby';
 
 const port = 5300;
 
-const uws = uWebSockets.App();
-//const uws = uWebSockets.SSLApp({
-//   key_file_name: true
-//     ? __dirname + '/misc/key.pem'
-//     : '/etc/letsencrypt/live/mongot.com/privkey.pem',
-//   cert_file_name: true
-//     ? __dirname + '/misc/cert.pem'
-//     : '/etc/letsencrypt/live/mongot.com/cert.pem',
-//   passphrase: '1234',
-// });
+const uws = uWebSockets.SSLApp({
+  key_file_name:
+    process.env.NODE_ENV === 'development'
+      ? __dirname + '/misc/key.pem'
+      : '/etc/letsencrypt/live/mongot.com/privkey.pem',
+  cert_file_name:
+    process.env.NODE_ENV === 'development'
+      ? __dirname + '/misc/certificate.pem'
+      : '/etc/letsencrypt/live/mongot.com/cert.pem',
+});
 
 const open = (ws: any) => {
   if (ws.url === '/api/lobby') {
