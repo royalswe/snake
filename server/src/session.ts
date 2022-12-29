@@ -77,7 +77,6 @@ export default class Session {
       for (const c of this.clients) {
         if (this.isCollide({ y: state.pos.y, x: state.pos.x }, c.gameState)) {
           client.status = PLAYER_STATUS.joined;
-          //console.log(this.clients);
           const winner = [...this.clients].filter((v) => v.status === PLAYER_STATUS.ready);
           if (winner.length <= 1) {
             this.status = GAME_STATUS.waiting;
@@ -125,6 +124,5 @@ export default class Session {
       throw new Error("client do not exist in session");
     }
     this.clients.delete(client);
-    console.log("client delete", client);
   }
 }

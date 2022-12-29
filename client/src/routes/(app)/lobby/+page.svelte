@@ -11,8 +11,6 @@
 		);
 	});
 	let gameCode: string;
-
-
 </script>
 
 <svelte:head>
@@ -38,7 +36,6 @@
 					<input type="text" bind:value={gameCode} placeholder="enter game code" />
 				</div>
 				<a href="/game/{gameCode}?board=46:30" class="btn btn-success"> Join Game </a>
-				
 			</div>
 		</div>
 	</div>

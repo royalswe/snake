@@ -13,39 +13,11 @@ import {
 
 const decoder = new TextDecoder("utf-8");
 export const sessions = new Map();
-let client: Client;
 
-function createSession(params: UrlParams) {
-  validateUrlParameters(params);
 
-  const { room } = params
-  if (sessions.has(room)) {
-    throw new Error(`room ${room} already exists`);
-  }
 
-  const session = new Session(params);
-  sessions.set(room, session);
-  return session;
-}
-
-function getSession(roomName: string) {
-  return sessions.get(roomName);
-}
-
-function validateUrlParameters(params: UrlParams): void {
-  const { room, width, height } = params;
-  if (!room || !width || !height) {
-    throw Error('Parameters "room and board" must be set')
-  }
-  if (!Number.isInteger(width) && !Number.isInteger(height)) {
-    if (width < 10 && height < 10) {
-      throw Error('Board parameter must be at least 10:10')
-    }
-    throw Error('Board parameter must be a integer');
-  }
-}
-
-export const game = (ws: WebSocket, message: BufferSource, isBinary: boolean) => {
+export default new (class Game {
+ public listen(ws: WebSocket, message: BufferSource, isBinary: boolean) :void {
 
   const clientMsg = JSON.parse(decoder.decode(message));
 
@@ -57,25 +29,26 @@ export const game = (ws: WebSocket, message: BufferSource, isBinary: boolean) =>
       ws.client = new Client(ws, roomName);
       ws.subscribe(roomName); // subscribe to the room name
 
-      const session = getSession(roomName) || createSession(params);
+      const session = this.getSession(roomName) || this.createSession(params);
       if (session.join(ws.client) === false) {
         throw Error("Could not join game session"); // Could not join game session
       }
-
-      ws.client.send({ type: EVENT.joinRoom, width: session.width, height: session.height }, isBinary);
-      ws.client.broadcast({type: EVENT.chatMessage, msg: `${ws.client.id} joined the room`}, isBinary)
+      // send playerId, status, id
+      console.log(session.clients);
+      
+      ws.client.send({ type: EVENT.joinRoom, width: session.width, height: session.height, clients: session.clients }, isBinary);
+      ws.client.broadcast({type: EVENT.chat, msg: `${ws.client.id} joined the room`}, isBinary)
       break;
     }
 
     case EVENT.joinGame: {
-      client = ws.client;
-      client.setGamestate();
-      client.status = PLAYER_STATUS.joined
-      if (client.session.status === GAME_STATUS.countDown) {
+      ws.client.setGamestate();
+      ws.client.status = PLAYER_STATUS.joined
+      if (ws.client.session.status === GAME_STATUS.countDown) {
         // cancel timeout on client
-        client.session.timer.refresh()
+        ws.client.session.timer.refresh()
       }
-      client.roomEmit({
+      ws.client.roomEmit({
         type: EVENT.playerStatus,
         msg: PLAYER_STATUS.joined,
       }, isBinary);
@@ -143,27 +116,58 @@ export const game = (ws: WebSocket, message: BufferSource, isBinary: boolean) =>
       break;
     }
 
-    case EVENT.chatMessage: {
-      client.roomEmit({
+    case EVENT.chat: {
+      ws.client.roomEmit({
         type: "chat-message",
         msg: clientMsg.message,
       }, isBinary);
       break;
     }
+   }
+   
+  };
+
+   private createSession(params: UrlParams) {
+    this.validateUrlParameters(params);
+  
+    const { room } = params
+    if (sessions.has(room)) {
+      throw new Error(`room ${room} already exists`);
+    }
+  
+    const session = new Session(params);
+    sessions.set(room, session);
+    return session;
+  }
+  
+  public getSession(roomName: string) {
+    return sessions.get(roomName);
+  }
+  
+  public validateUrlParameters(params: UrlParams): void {
+    const { room, width, height } = params;
+    if (!room || !width || !height) {
+      throw Error('Parameters "room and board" must be set')
+    }
+    if (!Number.isInteger(width) && !Number.isInteger(height)) {
+      if (width < 10 && height < 10) {
+        throw Error('Board parameter must be at least 10:10')
+      }
+      throw Error('Board parameter must be a integer');
+    }
+  }
+
+  
+  public open(ws: WebSocket) {
+    ws.send(
+      JSON.stringify({ type: EVENT.chat, msg: 'Welcome to the snake game!' })
+    );
   }
 
   /* Here we echo the message back, using compression if available */
   //let ok = ws.send(message, isBinary, true); // sender only
   //ws.publish('home/sensors/temperature', message, isBinary, true); // to all except the sender
   //uws.publish(ws.client.room, JSON.stringify(serverMsg), isBinary, true); // to all
-};
-
-export const close = (ws: WebSocket, _code: any, _msg: any) => {
-  console.log("WebSocket closed");
-  try {
-    ws.client.session.leave(ws.client);
-  } catch (error) {
-    console.error("remove client from session failed");
-    console.error("session output: " + sessions);
-  }
-};
+ 
+  
+})();

@@ -2,14 +2,14 @@ import { board } from '$lib/stores/board';
 import { state } from '$lib/stores/state';
 import { chat } from '$lib/stores/chat';
 import { PLAYER_STATUS } from '$lib/constants';
-import { EVENT } from '$lib/constants'
+import { EVENT } from '$lib/constants';
 
 let ws: WebSocket;
 /**
  * Create a websocket connection
- * @param {string} socketURL 
- * @param params 
- * @returns 
+ * @param {string} socketURL
+ * @param params
+ * @returns
  */
 export const connect = (socketURL: string, params?: Record<string, unknown>) => {
 	console.log('url: ' + socketURL);
@@ -28,11 +28,11 @@ export const connect = (socketURL: string, params?: Record<string, unknown>) => 
 
 		if (params) {
 			console.log('Connected! lets join ' + params.room);
-			ws.send(JSON.stringify({ type: 'join-room', params }));
+			ws.send(JSON.stringify({ type: EVENT.joinRoom, params }));
 		}
 	});
 
-	ws.addEventListener('message', (message) => {		
+	ws.addEventListener('message', (message) => {
 		const data = JSON.parse(message.data);
 
 		switch (data.type) {
@@ -47,8 +47,10 @@ export const connect = (socketURL: string, params?: Record<string, unknown>) => 
 				break;
 			case EVENT.joinRoom:
 				state.update((state) => ({ ...state, board: { width: data.width, height: data.height } }));
+				console.log(data.clients);
+
 				break;
-			case EVENT.chatMessage:
+			case EVENT.chat:
 				chat.update((msg) => ({ ...msg, messages: [data.msg].concat(msg.messages) }));
 				break;
 			case EVENT.gameOver:
@@ -59,7 +61,7 @@ export const connect = (socketURL: string, params?: Record<string, unknown>) => 
 				break;
 			case EVENT.error:
 				state.update((state) => ({ ...state, error: data.msg }));
-				break
+				break;
 			default:
 				console.log('unknown emit from server', data);
 				break;

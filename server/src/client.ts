@@ -9,6 +9,7 @@ import { startPosition } from './helpers/utils';
 export default class Client {
   ws: WebSocket;
   id: string;
+  playerId!: number;
   room: string;
   session!: Session;
   status: string;
@@ -18,9 +19,7 @@ export default class Client {
     this.ws = ws;
     this.id = id;
     this.room = room;
-    this.session;
     this.status = PLAYER_STATUS.spectating;
-    this.gameState;
   }
 
   setGamestate() {
@@ -30,7 +29,6 @@ export default class Client {
     ).length;
     const width = this.session.width;
     const height = this.session.height;
-    // console.log([...this.session.clients]);
 
     this.gameState = {
       color: COLOR[countPlayers],

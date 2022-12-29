@@ -7,7 +7,7 @@
 	import { state } from '$lib/stores/state';
 	import { chat } from '$lib/stores/chat';
 	import { PLAYER_STATUS } from '$lib/constants';
-	import ColorModule from './colorModule.svelte';
+	import ClientList from './clientList.svelte';
 
 	const roomName = $page.data.room;
 	const params = $page.data;
@@ -27,19 +27,6 @@
 		}
 	}
 
-	function joinGame() {
-		send({
-			type: 'join-game',
-			msg: roomName
-		});
-	}
-
-	function ready() {
-		send({
-			type: 'player-ready'
-		});
-	}
-
 	onMount(async () => {
 		connect(
 			'wss://' +
@@ -57,20 +44,14 @@
 </svelte:head>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="wrapper" on:click={develop}>
+<div class="wrapper">
 	<header>
 		<h1>Your game code is: <span id="gameCodeDisplay" />{roomName}</h1>
 		GameState: {$state.gameStatus} / PlayerState {$state.playerStatus}
 	</header>
 
 	<sidebar>
-		{#if $state.playerStatus === 'spectating'}
-			<!-- TODO: only show when game not full -->
-			<button on:click={joinGame}>Join game</button>
-		{:else if $state.playerStatus === 'joined'}
-			<button on:click={ready}>Ready</button>
-		{/if}
-
+		<ClientList />
 		<h4>Chat</h4>
 		<ul>
 			{#each $chat.messages as message}
@@ -81,9 +62,7 @@
 	<main>
 		<Snake />
 	</main>
-	{#if $state.error}
-		<ColorModule />
-	{/if}
+
 	{#if $state.error}
 		<ErrorModule errorMsg={$state.error} />
 	{/if}
