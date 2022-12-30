@@ -3,13 +3,14 @@
 	import { send } from '$lib/ws';
 	import { state } from '$lib/stores/state';
 	import CountDown from './countDown.svelte';
+	import { EVENT, PLAYER_STATUS } from '$lib/constants';
 
 	let w, h;
 
 	function onKeyDown(e: KeyboardEvent) {
 		var availableKeys = ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'];
-		if (availableKeys.indexOf(e.code) != -1) {
-			send({ type: 'movement', msg: e.code });
+		if (availableKeys.indexOf(e.code) != -1 && PLAYER_STATUS.ready) {
+			send({ type: EVENT.movement, msg: e.code });
 		}
 	}
 </script>

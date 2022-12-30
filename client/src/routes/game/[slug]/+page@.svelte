@@ -54,8 +54,8 @@
 		<ClientList />
 		<h4>Chat</h4>
 		<ul>
-			{#each $chat.messages as message}
-				<li>{message}</li>
+			{#each $chat as chat}
+				<li>{chat.message}</li>
 			{/each}
 		</ul>
 	</sidebar>

@@ -8,7 +8,7 @@ import path from 'path';
 const config = {
 	// Consult https://github.com/sveltejs/svelte-preprocess
 	// for more information about preprocessors
-	preprocess: preprocess({ postcss: true }),
+	preprocess: [preprocess({ postcss: true })],
 
 	kit: {
 		adapter: adapter({
@@ -23,7 +23,7 @@ const config = {
 		//adapter: adapter(),
 		alias: {
 			$src: path.resolve('./src'),
-			$routes: path.resolve('./src/routes'),
+			$routes: path.resolve('./src/routes')
 		}
 	}
 };

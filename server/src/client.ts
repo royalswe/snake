@@ -9,7 +9,7 @@ import { startPosition } from './helpers/utils';
 export default class Client {
   ws: WebSocket;
   id: string;
-  playerId!: number;
+  colorId!: number;
   room: string;
   session!: Session;
   status: string;
@@ -24,16 +24,17 @@ export default class Client {
 
   setGamestate() {
     // TODO: countPlayer wont work in real world
-    const countPlayers: number = [...this.session.clients].filter(
-      (v) => v.status !== PLAYER_STATUS.spectating
-    ).length;
+    // const countPlayers: number = [...this.session.clients].filter(
+    //   (v) => v.status !== PLAYER_STATUS.spectating
+    // ).length;
     const width = this.session.width;
     const height = this.session.height;
-
+		const color = COLOR[this.colorId];
+    
     this.gameState = {
-      color: COLOR[countPlayers],
-      pos: startPosition(width, height, countPlayers),
-      vel: VELOCITY[Object.keys(VELOCITY)[countPlayers]],
+      color: color,
+      pos: startPosition(width, height, this.colorId),
+      vel: VELOCITY[Object.keys(VELOCITY)[this.colorId]],
       snake: [],
       grid: { x: width, y: height },
     };

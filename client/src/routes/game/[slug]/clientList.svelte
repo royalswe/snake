@@ -2,6 +2,7 @@
 	import { state } from '$lib/stores/state';
 	import { send } from '$lib/ws';
 	import { EVENT } from '$lib/constants';
+	import { PAYER_COLORS } from '$lib/constants';
 
 	const ready = () => {
 		send({
@@ -9,45 +10,74 @@
 		});
 	};
 
-	function takeSeat() {
+	function takeSeat(color: string) {
+		const colorId = Object.keys(PAYER_COLORS).indexOf(color);
+
 		send({
 			type: EVENT.joinGame,
-			msg: 'roomName'
+			colorId
 		});
 	}
+	const seatTaken = (color: string, client: string) => (seats[color] = client);
+
+	const seats: any = PAYER_COLORS;
 </script>
 
-{#if $state.playerStatus === 'spectating'}
-	<!-- TODO: only show when game not full -->
-	<button on:click={takeSeat}>Join game</button>
-{:else if $state.playerStatus === 'joined'}
-	<button on:click={ready}>Ready</button>
-{/if}
+your player name: {$state.you}
 
 <div class="client-list">
 	<ul>
-		<li><span class="circle" /><button class="" on:click={takeSeat}>Take seat</button></li>
-		<li><span class="circle" /><button class="" on:click={takeSeat}>Take seat</button></li>
-		<li><span class="circle" /><button class="" on:click={takeSeat}>Take seat</button></li>
-		<li><span class="circle" /><button class="" on:click={takeSeat}>Take seat</button></li>
+		{#each Object.keys(PAYER_COLORS) as color}
+			<li>
+				<i class="circle {color}" />
+				{#if seats[color]}
+					{seats[color]}
+					{#if $state.you === seats[color]}
+						<button value="1" on:click|once={ready}>Click when ready!</button>
+					{/if}
+				{:else}
+					<button on:click|once={() => takeSeat(color)}>Take seat</button>
+				{/if}
+			</li>
+		{/each}
+
+		{#each $state.clients as client}
+			{#if client.color}
+				{seatTaken(client.color, client.clientId)}
+			{:else}
+				<li>{client.clientId}</li>
+			{/if}
+		{/each}
 	</ul>
 </div>
 
-<style>
+<style lang="postcss">
 	.client-list {
 		background-color: beige;
 		border: 1px solid gray;
-	}
 
-	.circle {
-		border-radius: 100%;
-		background-color: #ff5252;
-		display: inline-block;
-		width: 15px;
-		height: 15px;
-		font-size: 15px;
-		vertical-align: middle;
-		margin-bottom: 2px;
-		margin-right: 10px;
+		& .circle {
+			border-radius: 100%;
+			display: inline-block;
+			width: 15px;
+			height: 15px;
+			font-size: 15px;
+			vertical-align: middle;
+			margin-bottom: 2px;
+			margin-right: 10px;
+		}
+
+		& i.red {
+			background-color: red;
+		}
+		& i.blue {
+			background-color: blue;
+		}
+		& i.green {
+			background-color: green;
+		}
+		& i.yellow {
+			background-color: yellow;
+		}
 	}
 </style>

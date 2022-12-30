@@ -39,24 +39,34 @@ export const connect = (socketURL: string, params?: Record<string, unknown>) => 
 			case EVENT.gameState:
 				board.set(data.msg);
 				break;
-			case EVENT.playerStatus:
+			case EVENT.joinGame:
 				state.setPlayerStatus(data.msg);
+				// TODO: rendundant
+				state.update((self) => ({ ...self, clients: data.clients })); // update status of clients in room
 				break;
 			case EVENT.gameStatus:
 				state.setGameStatus(data.msg);
 				break;
 			case EVENT.joinRoom:
-				state.update((state) => ({ ...state, board: { width: data.width, height: data.height } }));
-				console.log(data.clients);
-
+				if (data.clientId === data.you) {
+					state.set('you', data.you);
+					state.update((state) => ({
+						...state,
+						board: { width: data.width, height: data.height } // save the canvas measures
+					}));
+				} else {
+					chat.add({ message: data.clientId + ' joined the room' });
+				}
+				state.update((self) => ({ ...self, clients: data.clients })); // update status of clients in room
 				break;
 			case EVENT.chat:
-				chat.update((msg) => ({ ...msg, messages: [data.msg].concat(msg.messages) }));
+				chat.add(data.msg);
+				break;
+			case EVENT.playerReady:
+				state.setPlayerStatus(data.msg); // TODO: update all clients instead
 				break;
 			case EVENT.gameOver:
-				//state.setGameStatus(GAME_STATUS.waiting);
-				state.setCounter(PLAYER_STATUS.joined);
-				//state.playerStatus = 'hej'
+				state.setPlayerStatus(PLAYER_STATUS.joined);
 				console.log('winner is:', data.msg?.gamestate?.color);
 				break;
 			case EVENT.error:

@@ -5,7 +5,6 @@
 <script lang="ts">
 	import type { GameState } from '$models/gameState';
 	import { onMount } from 'svelte';
-	import { COLOURS } from '$lib/constants';
 	import { state } from '$lib/stores/state';
 	import { board } from '$lib/stores/board';
 
@@ -29,8 +28,8 @@
 
 	function calculateAspectRatioFit() {
 		const ratio = Math.min(parentWidth / width, parentHeight / height);
-		console.log(parentWidth,width, parentHeight,height);
-		
+		console.log(parentWidth, width, parentHeight, height);
+
 		return { width: width * ratio, height: height * ratio };
 	}
 
@@ -70,7 +69,7 @@
 		ctx.canvas.width = w;
 		ctx.canvas.height = h;
 
-		ctx.fillStyle = COLOURS.BG;
+		ctx.fillStyle = 'purple';
 		ctx.fillRect(0, 0, w, h);
 
 		for (let x = 0; x <= w; x += step) {

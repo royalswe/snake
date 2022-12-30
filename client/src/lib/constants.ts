@@ -4,11 +4,11 @@ export const BOARD = {
 	boardHeight: 50
 };
 
-// colours
-export const COLOURS = {
-	BG: 'purple',
-	SNAKE: 'green',
-	FOOD: 'orange'
+export const PAYER_COLORS = {
+	red: null,
+	blue: null,
+	green: null,
+	yellow: null
 } as const;
 
 // Shared constants bellow

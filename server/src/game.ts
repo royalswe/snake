@@ -17,10 +17,12 @@ export const sessions = new Map();
 
 
 export default new (class Game {
- public listen(ws: WebSocket, message: BufferSource, isBinary: boolean) :void {
+
+  public listen(ws: WebSocket, message: BufferSource, isBinary: boolean): void {
 
   const clientMsg = JSON.parse(decoder.decode(message));
-
+ 
+  console.log(clientMsg);
   switch (clientMsg.type) {
     case EVENT.joinRoom: {
       const params = clientMsg.params;
@@ -32,25 +34,23 @@ export default new (class Game {
       const session = this.getSession(roomName) || this.createSession(params);
       if (session.join(ws.client) === false) {
         throw Error("Could not join game session"); // Could not join game session
-      }
-      // send playerId, status, id
-      console.log(session.clients);
-      
-      ws.client.send({ type: EVENT.joinRoom, width: session.width, height: session.height, clients: session.clients }, isBinary);
-      ws.client.broadcast({type: EVENT.chat, msg: `${ws.client.id} joined the room`}, isBinary)
+      }   
+      ws.client.roomEmit({ type: EVENT.joinRoom, width: session.width, height: session.height, you: ws.client.id, clients: this.updateClientList(roomName) }, isBinary);
       break;
     }
 
     case EVENT.joinGame: {
+      ws.client.colorId = clientMsg.colorId;
       ws.client.setGamestate();
-      ws.client.status = PLAYER_STATUS.joined
+      ws.client.status = PLAYER_STATUS.joined;
       if (ws.client.session.status === GAME_STATUS.countDown) {
         // cancel timeout on client
-        ws.client.session.timer.refresh()
+        ws.client.session.timer.refresh();
       }
       ws.client.roomEmit({
-        type: EVENT.playerStatus,
+        type: EVENT.joinGame,
         msg: PLAYER_STATUS.joined,
+        clients: this.updateClientList(ws.client.session.room)
       }, isBinary);
       break;
     }
@@ -65,7 +65,7 @@ export default new (class Game {
       }
       ws.client.status = PLAYER_STATUS.ready;
       ws.client.roomEmit(
-        { type: EVENT.playerStatus, msg: ws.client.status },
+        { type: EVENT.playerReady, msg: ws.client.status },
         isBinary
       );
 
@@ -112,7 +112,9 @@ export default new (class Game {
       break;
     }
     case EVENT.movement: {
-      ws.client.gameState.vel = VELOCITY[clientMsg.msg];
+      if (ws.client.status === PLAYER_STATUS.ready) {
+        ws.client.gameState.vel = VELOCITY[clientMsg.msg];        
+      }
       break;
     }
 
@@ -139,6 +141,12 @@ export default new (class Game {
     sessions.set(room, session);
     return session;
   }
+
+  private updateClientList(room: string): object[] {
+    const session = this.getSession(room);
+    const clients = [...session.clients].map((client: any) => ({ clientId: client.id, clientStatus: client.status, color: client.color }));
+    return clients;
+ }
   
   public getSession(roomName: string) {
     return sessions.get(roomName);
@@ -160,7 +168,7 @@ export default new (class Game {
   
   public open(ws: WebSocket) {
     ws.send(
-      JSON.stringify({ type: EVENT.chat, msg: 'Welcome to the snake game!' })
+      JSON.stringify({ type: EVENT.chat, msg: { message: 'Welcome to the snake game!' } })
     );
   }
 

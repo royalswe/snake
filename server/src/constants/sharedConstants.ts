@@ -23,5 +23,5 @@ export const EVENT = {
   joinRoom: 'join-room',
   movement: 'movement',
   playerReady: 'player-ready',
-  playerStatus: 'player-status',
+  // playerStatus: 'player-status',
 } as const;

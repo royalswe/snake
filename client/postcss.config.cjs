@@ -1,3 +1,4 @@
+const autoprefixer = require('autoprefixer');
 const postcssPresetEnv = require('postcss-preset-env');
 
 const config = {
@@ -9,7 +10,8 @@ const config = {
 				'custom-media-queries': true,
 				'media-query-ranges': true
 			}
-		})
+		}),
+		autoprefixer
 	]
 };
 
