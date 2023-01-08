@@ -7,8 +7,8 @@ export const VELOCITY = {
 
 
 export const COLOR = {
-  0: "red",
-  1: "blue",
-  2: "green",
-  3: "yellow",
+  red: 0,
+  blue: 1,
+  green: 2,
+  yellow: 3,
 } as const;

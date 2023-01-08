@@ -6,26 +6,10 @@
 	import { onMount } from 'svelte';
 	import { state } from '$lib/stores/state';
 	import { chat } from '$lib/stores/chat';
-	import { PLAYER_STATUS } from '$lib/constants';
 	import ClientList from './clientList.svelte';
 
 	const roomName = $page.data.room;
 	const params = $page.data;
-
-	function develop() {
-		console.log('develop', $state.gameStatus);
-
-		if ($state.playerStatus === PLAYER_STATUS.spectating) {
-			send({
-				type: 'join-game',
-				msg: roomName
-			});
-		} else if ($state.playerStatus === PLAYER_STATUS.joined) {
-			send({
-				type: 'player-ready'
-			});
-		}
-	}
 
 	onMount(async () => {
 		connect(
@@ -43,7 +27,6 @@
 	<meta name="description" content="Svelte snake app" />
 </svelte:head>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="wrapper">
 	<header>
 		<h1>Your game code is: <span id="gameCodeDisplay" />{roomName}</h1>
@@ -73,17 +56,14 @@
 		height: 100vh;
 		display: grid;
 		grid-template:
-			'header header' 75px
+			'header header'
 			'sidebar main' minmax(auto, calc(100vh - 75px)) / 350px auto;
-	}
-	@media (width < 600px) {
-		.wrapper {
-			height: 100%;
-			display: grid;
+
+		@media (width < 600px) {
 			grid-template:
-				'header' 75px
-				'main' auto
-				'sidebar' minmax(100px, auto);
+				'header'
+				'main' 1fr
+				'sidebar';
 		}
 	}
 	header {
@@ -100,5 +80,6 @@
 		background-color: grey;
 		border: solid yellow 3px;
 		overflow: hidden;
+		min-height: 100px;
 	}
 </style>

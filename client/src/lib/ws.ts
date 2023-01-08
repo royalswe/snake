@@ -1,9 +1,9 @@
 import { board } from '$lib/stores/board';
 import { state } from '$lib/stores/state';
 import { chat } from '$lib/stores/chat';
-import { PLAYER_STATUS } from '$lib/constants';
-import { EVENT } from '$lib/constants';
+import { EVENT, GAME_STATUS, PLAYER_STATUS } from '$lib/constants';
 
+const decoder = new TextDecoder("utf-8");
 let ws: WebSocket;
 /**
  * Create a websocket connection
@@ -22,58 +22,68 @@ export const connect = (socketURL: string, params?: Record<string, unknown>) => 
 		state.update((s) => ({ ...s, error: 'Unable to connect' }));
 		return;
 	}
+	ws.binaryType = 'arraybuffer';
 
 	ws.addEventListener('open', () => {
 		// TODO: Set up ping/pong, etc.
 
 		if (params) {
 			console.log('Connected! lets join ' + params.room);
-			ws.send(JSON.stringify({ type: EVENT.joinRoom, params }));
+			send(EVENT.joinRoom, { params });
 		}
 	});
+	ws.binaryType = "arraybuffer";
 
-	ws.addEventListener('message', (message) => {
-		const data = JSON.parse(message.data);
+	ws.addEventListener('message', ({ data }) => {
+		const msg = data instanceof ArrayBuffer ? JSON.parse(decoder.decode(data)) : JSON.parse(data);
 
-		switch (data.type) {
+		// if (data instanceof ArrayBuffer) {
+		// 	JSON.parse(decoder.decode(data));
+		// } else {
+		// 	JSON.parse(data);
+		// }
+		console.log(msg);
+
+		switch (msg.type) {
 			case EVENT.gameState:
-				board.set(data.msg);
+				board.set(msg.data);
+				break;
+			case EVENT.open:
+				state.update((state) => ({ ...state, you: msg.msg }));
+				chat.add({ message: 'Welcome to the snake game!' });
 				break;
 			case EVENT.joinGame:
-				state.setPlayerStatus(data.msg);
-				// TODO: rendundant
-				state.update((self) => ({ ...self, clients: data.clients })); // update status of clients in room
+				state.setPlayerStatus(msg.playerStatus);
 				break;
 			case EVENT.gameStatus:
-				state.setGameStatus(data.msg);
+				state.setGameStatus(msg.gameStatus);
 				break;
 			case EVENT.joinRoom:
-				if (data.clientId === data.you) {
-					state.set('you', data.you);
-					state.update((state) => ({
-						...state,
-						board: { width: data.width, height: data.height } // save the canvas measures
-					}));
-				} else {
-					chat.add({ message: data.clientId + ' joined the room' });
-				}
-				state.update((self) => ({ ...self, clients: data.clients })); // update status of clients in room
+				state.update((state) => ({
+					...state,
+					board: { width: msg.width, height: msg.height } // save the canvas measures
+				}));
+				break;
+			case EVENT.roomStatus:
+				state.update((self) => ({ ...self, clients: msg.clients })); // update status of clients in room
 				break;
 			case EVENT.chat:
-				chat.add(data.msg);
+				chat.add(msg.msg);
 				break;
 			case EVENT.playerReady:
-				state.setPlayerStatus(data.msg); // TODO: update all clients instead
+				state.setPlayerStatus(msg.playerStatus);
 				break;
 			case EVENT.gameOver:
-				state.setPlayerStatus(PLAYER_STATUS.joined);
-				console.log('winner is:', data.msg?.gamestate?.color);
+				state.update((state) => ({ ...state, playerStatus: state.playerStatus === PLAYER_STATUS.ready ? PLAYER_STATUS.joined : PLAYER_STATUS.spectating }));
+				state.setGameStatus(GAME_STATUS.waiting);
+				chat.add({ message: msg.winner });
+				state.update((self) => ({ ...self, clients: msg.clients })); // update status of clients in room
 				break;
 			case EVENT.error:
-				state.update((state) => ({ ...state, error: data.msg }));
+				state.update((state) => ({ ...state, error: msg.msg }));
 				break;
 			default:
-				console.log('unknown emit from server', data);
+				console.log('unknown emit from server', msg);
 				break;
 		}
 	});
@@ -88,7 +98,8 @@ export const connect = (socketURL: string, params?: Record<string, unknown>) => 
 	});
 };
 
-export const send = (message: unknown) => {
+export const send = (type: string, message: Record<string, unknown>): void => {
+	message = Object.assign({ type }, message);
 	// Send the message to the server.
 	ws.send(JSON.stringify(message));
 };

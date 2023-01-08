@@ -2,18 +2,19 @@ import type { Cell, GameState } from './models/gameState';
 import type { UrlParams } from './models/urlParams';
 import type Client from './client';
 import { PLAYER_STATUS, COUNT_DOWN, GAME_STATUS } from "./constants/sharedConstants";
-import { isEveryStatusSame } from "./helpers/utils";
+import { isEveryPlayerReady } from "./helpers/utils";
 
 export default class Session {
   room!: string;
   width!: number;
   height!: number;
+  playingClients!: Client[];
   clients: Set<Client>;
   status: string;
   timer: any;
 
   constructor(params: UrlParams) {
-    Object.assign(this, params)
+    Object.assign(this, params);
     this.clients = new Set();
     this.status = "waiting";
     this.timer = null;
@@ -26,15 +27,12 @@ export default class Session {
     return new Promise((resolve, reject) => {
 
       setTimeout(() => {
-        if (!isEveryStatusSame(this.clients, PLAYER_STATUS.ready)) {
+        if (!isEveryPlayerReady(this.clients)) {
           return reject;
         }
 
         this.status = GAME_STATUS.running;
-        resolve({
-          type: "game-status",
-          msg: GAME_STATUS.running,
-        });
+        resolve(this.status);
       }, duration);
     });
   }
@@ -65,23 +63,28 @@ export default class Session {
   snakeGrow() {
     //this.clients.forEach((client) => {
     //((const client = this.clients.keys().next().value;
-    for (const client of this.clients) {
+    for (const client of this.playingClients) {
       const state = client.gameState;
-      if (client.status !== PLAYER_STATUS.ready || !state) {
-        return;
+      if (!state) {
+        return console.log('player do not have any state');
       }
 
       state.pos.y += state.vel.y;
       state.pos.x += state.vel.x;
 
-      for (const c of this.clients) {
+      for (const c of this.playingClients) {
         if (this.isCollide({ y: state.pos.y, x: state.pos.x }, c.gameState)) {
           client.status = PLAYER_STATUS.joined;
-          const winner = [...this.clients].filter((v) => v.status === PLAYER_STATUS.ready);
+          const winner = this.playingClients.filter((v) => v.status === PLAYER_STATUS.ready);
           if (winner.length <= 1) {
-            this.status = GAME_STATUS.waiting;
+            // reset every player status
+            this.playingClients.forEach(client => {
+              if (client.status === PLAYER_STATUS.ready) {
+                client.status = PLAYER_STATUS.joined;
+              }
+            });
 
-            return winner.length ? winner : client;
+            return winner.length ? 'The winner is ' + winner[0].color : 'Game Over';
           }
         }
       }

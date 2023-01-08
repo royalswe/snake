@@ -7,13 +7,13 @@ interface Board {
 	width: number;
 	height: number;
 }
-interface Client {
+export interface Client {
 	clientId: string;
 	clientStatus: string;
 	color: string;
 }
 
-type State = {
+interface State {
 	you?: string;
 	board: Board;
 	gameStatus: GameStatus;
@@ -23,7 +23,7 @@ type State = {
 };
 
 const _state = writable<State>({
-	board: {} as Board,
+	board: { width: 0, height: 0 },
 	gameStatus: 'waiting',
 	playerStatus: 'spectating',
 	clients: []
@@ -33,6 +33,6 @@ export const state = {
 	subscribe: _state.subscribe,
 	update: _state.update,
 	set: (key: string, value: unknown) => _state.update((self) => ({ ...self, [key]: value })),
-	setGameStatus: (value: GameStatus) => _state.update((s) => ({ ...s, gameStatus: value })),
-	setPlayerStatus: (value: PlayeStatus) => _state.update((s) => ({ ...s, playerStatus: value }))
+	setGameStatus: (value: GameStatus) => _state.update((self) => ({ ...self, gameStatus: value })),
+	setPlayerStatus: (value: PlayeStatus) => _state.update((self) => ({ ...self, playerStatus: value }))
 };

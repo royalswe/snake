@@ -1,41 +1,29 @@
 <script lang="ts">
 	import { state } from '$lib/stores/state';
 	import { send } from '$lib/ws';
-	import { EVENT } from '$lib/constants';
-	import { PAYER_COLORS } from '$lib/constants';
+	import { EVENT, PLAYER_STATUS } from '$lib/constants';
+	import { PLAYER_COLORS } from '$lib/constants';
 
-	const ready = () => {
-		send({
-			type: EVENT.playerReady
-		});
-	};
-
-	function takeSeat(color: string) {
-		const colorId = Object.keys(PAYER_COLORS).indexOf(color);
-
-		send({
-			type: EVENT.joinGame,
-			colorId
-		});
-	}
+	const ready = () => send(EVENT.playerReady, {});
+	const takeSeat = (color: string) => send(EVENT.joinGame, { color });
 	const seatTaken = (color: string, client: string) => (seats[color] = client);
-
-	const seats: any = PAYER_COLORS;
+	const seats: any = PLAYER_COLORS;
 </script>
 
 your player name: {$state.you}
+<br />
 
 <div class="client-list">
 	<ul>
-		{#each Object.keys(PAYER_COLORS) as color}
+		{#each Object.keys(PLAYER_COLORS) as color}
 			<li>
 				<i class="circle {color}" />
 				{#if seats[color]}
-					{seats[color]}
-					{#if $state.you === seats[color]}
-						<button value="1" on:click|once={ready}>Click when ready!</button>
+					{#if $state.you === seats[color] && $state.playerStatus === PLAYER_STATUS.joined}
+						<button on:click|once={ready}>Click when ready!</button>
 					{/if}
-				{:else}
+					{seats[color]}
+				{:else if $state.playerStatus === PLAYER_STATUS.spectating}
 					<button on:click|once={() => takeSeat(color)}>Take seat</button>
 				{/if}
 			</li>

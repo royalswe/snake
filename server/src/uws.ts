@@ -25,6 +25,14 @@ const open = (ws: any) => {
   }
 };
 
+const close = (ws: any, _code: any, _msg: any): void => {
+  if (ws.url === '/api/lobby') {
+    console.log('client left lobby');
+  } else if (ws.url === '/api/room') {
+    Game.close(ws);
+  }
+};
+
 uws
   .ws('/api/*', {
     idleTimeout: 32,
@@ -65,16 +73,7 @@ uws
         );
       }
     },
-    close: (ws: any, _code: any, _msg: any): void => {
-      try {
-        if (ws.client) {
-          ws.client.session.leave(ws.client);
-        }
-      } catch (error) {
-        console.error('remove client from session failed');
-        console.error('session output: ' + ws);
-      }
-    },
+    close,
   })
   .get('/api/*', (res, req) => {
     res

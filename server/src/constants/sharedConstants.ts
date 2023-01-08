@@ -14,8 +14,10 @@ export const GAME_STATUS = {
 } as const;
 
 export const EVENT = {
+  open: 'open',
   chat: 'chat',
   error: 'error',
+  roomStatus: 'room-status',
   gameState: 'game-state',
   gameStatus: 'game-status',
   gameOver: 'gameOver',
@@ -23,5 +25,4 @@ export const EVENT = {
   joinRoom: 'join-room',
   movement: 'movement',
   playerReady: 'player-ready',
-  // playerStatus: 'player-status',
 } as const;

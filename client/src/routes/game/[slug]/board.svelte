@@ -7,6 +7,7 @@
 	import { onMount } from 'svelte';
 	import { state } from '$lib/stores/state';
 	import { board } from '$lib/stores/board';
+	import { GAME_STATUS } from '$lib/constants';
 
 	export let parentWidth: number;
 	export let parentHeight: number;
@@ -16,8 +17,11 @@
 
 	let canvas: HTMLCanvasElement;
 	let ctx: any;
+
+	$: $state.gameStatus === GAME_STATUS.countDown && drawCanvas();
 	$: (height || width) && drawCanvas();
 	$: (height = $state.board.height), (width = $state.board.width);
+
 	const delay = (func: Function, delay: number) => {
 		let timer: any;
 		return () => {
@@ -28,15 +32,13 @@
 
 	function calculateAspectRatioFit() {
 		const ratio = Math.min(parentWidth / width, parentHeight / height);
-		console.log(parentWidth, width, parentHeight, height);
-
 		return { width: width * ratio, height: height * ratio };
 	}
 
 	onMount(() => {
 		board.subscribe((states: any) => {
 			if (!states) {
-				return;
+				return console.log('no state on canvas loop');
 			}
 			requestAnimationFrame(() => {
 				states.forEach((state: GameState) => {
@@ -92,7 +94,7 @@
 
 		for (let i = 0; i < snake.length; i++) {
 			const cell = snake[i];
-			ctx.fillStyle = '#' + Math.floor(Math.random() * 16777215).toString(16);
+			ctx.fillStyle = state.color; //'#' + Math.floor(Math.random() * 16777215).toString(16);
 
 			//ctx.beginPath();
 			//ctx.fillStyle = '#ccc';
@@ -111,12 +113,3 @@
 </script>
 
 <canvas bind:this={canvas} />
-
-<style>
-	canvas {
-		border: 1px solid blue;
-		/* object-fit: contain; */
-		/* aspect-ratio: 5/3;  */
-		/* height: 100%; */
-	}
-</style>

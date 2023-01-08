@@ -1,4 +1,5 @@
 import type Client from '../client';
+import { PLAYER_STATUS } from '../constants/sharedConstants';
 
 export function makeid() {
 	let len = 6;
@@ -10,15 +11,16 @@ export function makeid() {
 	return id;
 }
 
-export const isEveryStatusSame = (set: Set<Client>, status: string) => [...set].every((obj) => obj.status === status);
+export const isEveryPlayerReady = (set: Set<Client>) => [...set].every((obj) => obj.status !== PLAYER_STATUS.joined);
 
-export function startPosition(width: number, height: number, key: number) {
+
+export function startPosition(width: number, height: number, key: string) {
 	const map = {
-		0: { x: 3, y: 3 },
-		1: { x: width - 3, y: height - 3 },
-		2: { x: 3, y: height - 3 },
-		3: { x: width - 3, y: 3 },
-	}
+		red: { x: 3, y: 3 },
+		blue: { x: width - 3, y: height - 3 },
+		green: { x: 3, y: height - 3 },
+		yellow: { x: width - 3, y: 3 },
+	};
 
 	return map[key] || console.error(key + ' is not valid key for start position');
 

@@ -7,12 +7,12 @@
 
 	let w, h;
 
-	function onKeyDown(e: KeyboardEvent) {
-		var availableKeys = ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'];
+	const onKeyDown = (e: KeyboardEvent): void => {
+		const availableKeys = ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'];
 		if (availableKeys.indexOf(e.code) != -1 && PLAYER_STATUS.ready) {
-			send({ type: EVENT.movement, msg: e.code });
+			send(EVENT.movement, { key: e.code });
 		}
-	}
+	};
 </script>
 
 <div class="game-container" bind:offsetWidth={w} bind:offsetHeight={h}>
@@ -27,6 +27,5 @@
 <style>
 	.game-container {
 		height: 100%;
-		width: 100%;
 	}
 </style>
