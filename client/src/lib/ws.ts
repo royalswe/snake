@@ -36,12 +36,6 @@ export const connect = (socketURL: string, params?: Record<string, unknown>) => 
 
 	ws.addEventListener('message', ({ data }) => {
 		const msg = data instanceof ArrayBuffer ? JSON.parse(decoder.decode(data)) : JSON.parse(data);
-
-		// if (data instanceof ArrayBuffer) {
-		// 	JSON.parse(decoder.decode(data));
-		// } else {
-		// 	JSON.parse(data);
-		// }
 		console.log(msg);
 
 		switch (msg.type) {

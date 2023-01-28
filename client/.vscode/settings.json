@@ -20,6 +20,7 @@
     "typescript.format.semicolons": "insert",
     "javascript.preferences.quoteStyle": "single",
     "javascript.format.semicolons": "insert",
+    "workbench.editor.labelFormat": "short",
 
     "javascript.inlayHints.parameterTypes.enabled": true,
     "javascript.inlayHints.functionLikeReturnTypes.enabled": true

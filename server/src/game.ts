@@ -23,6 +23,7 @@ export default new (class Game {
   }
 
   public listen(ws: WebSocket, message: BufferSource, _isBinary: boolean): void {
+    const client: Client = ws.client;
 
     const clientMsg = JSON.parse(decoder.decode(message));
 
@@ -31,16 +32,16 @@ export default new (class Game {
         const params = clientMsg.params;
         const roomName = params.room;
 
-        ws.client.room = roomName;
+        client.room = roomName;
         ws.subscribe(roomName); // subscribe to the room name
 
         const session = this.getSession(roomName) || this.createSession(params);
-        if (session.join(ws.client) === false) {
+        if (session.join(client) === false) {
           throw Error("Could not join game session"); // Could not join game session
         }
-        ws.client.send(EVENT.joinRoom, { width: session.width, height: session.height });
+        client.send(EVENT.joinRoom, { width: session.width, height: session.height });
 
-        ws.client.roomEmit(EVENT.roomStatus, {
+        client.roomEmit(EVENT.roomStatus, {
           clients: this.updateClientList(roomName)
         });
         break;
@@ -48,43 +49,42 @@ export default new (class Game {
 
       case EVENT.joinGame: {
         // TODO: check if possible to join
-        ws.client.color = clientMsg.color;
-        ws.client.setGamestate();
-        ws.client.status = PLAYER_STATUS.joined;
-        if (ws.client.session.status === GAME_STATUS.countDown) {
+        client.color = clientMsg.color;
+        client.setGamestate();
+        client.status = PLAYER_STATUS.joined;
+        if (client.session.status === GAME_STATUS.countDown) {
           // cancel timeout on client
-          ws.client.session.timer.refresh();
+          client.session.timer.refresh();
         }
-        ws.client.send(EVENT.joinGame, { playerStatus: PLAYER_STATUS.joined });
-        ws.client.roomEmit(EVENT.roomStatus, {
-          clients: this.updateClientList(ws.client.session.room)
+        client.send(EVENT.joinGame, { playerStatus: PLAYER_STATUS.joined });
+        client.roomEmit(EVENT.roomStatus, {
+          clients: this.updateClientList(client.session.room)
         });
         break;
       }
 
       case EVENT.playerReady: {
-        const session: Session = ws.client.session;
+        const session: Session = client.session;
         if (!session) {
           throw Error("can not be ready if not joined session");
         }
-        console.log(session.status, ws.client.status);
 
-        if (session.status === GAME_STATUS.running || ws.client.status !== PLAYER_STATUS.joined) {
+        if (session.status === GAME_STATUS.running || client.status !== PLAYER_STATUS.joined) {
           throw Error("game already started or you have not join the game"); // if game is allready started or player clicked ready when not joined
         }
-        ws.client.status = PLAYER_STATUS.ready;
-        ws.client.send(EVENT.playerReady, { playerStatus: ws.client.status },
+        client.status = PLAYER_STATUS.ready;
+        client.send(EVENT.playerReady, { playerStatus: client.status },
         );
 
         if (isEveryPlayerReady(session.clients)) {
-          ws.client.roomEmit(EVENT.gameStatus, { gameStatus: GAME_STATUS.countDown });
+          client.roomEmit(EVENT.gameStatus, { gameStatus: GAME_STATUS.countDown });
           // start count down
           session
             .countDown().then((gameStatus): void => {
               // store playing clients
               session.playingClients = [...session.clients].filter((v) => v.status === PLAYER_STATUS.ready);
 
-              ws.client.roomEmit(EVENT.gameStatus, { gameStatus });
+              client.roomEmit(EVENT.gameStatus, { gameStatus });
               const cancelTimer = session.gameIntervall(() => {
                 const winner = session.snakeGrow();
 
@@ -92,12 +92,12 @@ export default new (class Game {
                   cancelTimer();
                   session.status = GAME_STATUS.waiting;
 
-                  // ws.client.send(EVENT.joinGame, { playerStatus: PLAYER_STATUS.joined });
-                  ws.client.roomEmit(EVENT.gameOver, { winner: winner, clients: this.updateClientList(ws.client.session.room) });
+                  // client.send(EVENT.joinGame, { playerStatus: PLAYER_STATUS.joined });
+                  client.roomEmit(EVENT.gameOver, { winner: winner, clients: this.updateClientList(client.session.room) });
                   // reset snakes
                   session.playingClients.forEach(client => client.setGamestate());
                 } else {
-                  ws.client.roomEmit(EVENT.gameState, {
+                  client.roomEmit(EVENT.gameState, {
                     data: [...session.playingClients].map((v) => v.gameState),
                   });
                 }
@@ -108,14 +108,14 @@ export default new (class Game {
         break;
       }
       case EVENT.movement: {
-        if (ws.client.status === PLAYER_STATUS.ready) {
-          ws.client.gameState.vel = VELOCITY[clientMsg.key];
+        if (client.status === PLAYER_STATUS.ready) {
+          client.gameState.vel = VELOCITY[clientMsg.key];
         }
         break;
       }
 
       case EVENT.chat: {
-        ws.client.roomEmit(EVENT.chat, {
+        client.roomEmit(EVENT.chat, {
           msg: clientMsg.message,
         });
         break;

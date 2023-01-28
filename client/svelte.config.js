@@ -1,6 +1,4 @@
-//import adapter from '@sveltejs/adapter-auto';
 import adapter from '@sveltejs/adapter-static';
-
 import preprocess from 'svelte-preprocess';
 import path from 'path';
 
@@ -16,7 +14,7 @@ const config = {
 			// these options are set automatically — see below
 			pages: 'build',
 			assets: 'build',
-			fallback: '200.html',
+			fallback: 'index.html',
 			precompress: false,
 			strict: true
 		}),
@@ -25,7 +23,7 @@ const config = {
 			$src: path.resolve('./src'),
 			$routes: path.resolve('./src/routes')
 		}
-	}
+	},
 };
 
 export default config;

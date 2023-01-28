@@ -1,6 +1,6 @@
 export interface UrlParams {
     room: string | undefined;
     width?: number;
-    height?: number
+    height?: number;
     mode?: string;
 }

@@ -37,8 +37,7 @@ export default class Client {
    * Send to local client only
    */
   send(type: string, message: Record<string, unknown>, isBinary = true, compress = true) {
-    message = Object.assign({ type }, message);
-
+    message = { type, ...message };
     const ok = this.ws.send(JSON.stringify(message), isBinary, compress);
     if (!ok) {
       console.error("problem sending client msg from " + this.room);
@@ -48,14 +47,14 @@ export default class Client {
    * Send to all clients in the same session except local user
    */
   broadcast(type: string, message: Record<string, unknown>, isBinary = true, compress = true) {
-    message = Object.assign({ type, clientId: this.id }, message);
+    message = { type, clientId: this.id, ...message };
     this.ws.publish(this.room, JSON.stringify(message), isBinary, compress); // to all except the sender
   }
   /**
    * Send to all clients in room
    */
   roomEmit(type: string, message: Record<string, unknown>, isBinary = true, compress = true) {
-    message = Object.assign({ type, clientId: this.id }, message);
+    message = { type, clientId: this.id, ...message };
     uws.publish(this.room, JSON.stringify(message), isBinary, compress); // to all
   }
 }
