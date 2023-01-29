@@ -39,5 +39,5 @@ export function createSetCookie(options: Cookie): string {
     + `; Path=${path}`
     + `${secure ? '; Secure' : ''}`
     + `${httpOnly ? '; HttpOnly' : ''}`
-    + `; Path=${sameSite}`;
+    + `; SameSite=${sameSite}`;
 }

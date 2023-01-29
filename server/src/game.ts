@@ -165,8 +165,6 @@ export default new (class Game {
 
   public close(ws: WebSocket) {
     try {
-      console.log(ws.client);
-
       if (ws.client) {
         ws.client.session.leave(ws.client);
       }

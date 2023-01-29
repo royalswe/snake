@@ -12,8 +12,6 @@ let ws: WebSocket;
  * @returns
  */
 export const connect = (socketURL: string, params?: Record<string, unknown>) => {
-	console.log('url: ' + socketURL);
-
 	ws = new WebSocket(socketURL);
 	if (!ws) {
 		// Store an error in our state.  The function will be

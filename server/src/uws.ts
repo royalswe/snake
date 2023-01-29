@@ -19,6 +19,8 @@ const uws = uWebSockets.SSLApp({
 });
 
 const open = (ws: any) => {
+  console.log(ws.user);
+
   if (ws.url === '/api/lobby') {
     Lobby.open(ws);
   } else if (ws.url === '/api/room') {
@@ -34,8 +36,18 @@ const close = (ws: any, _code: any, _msg: any): void => {
   }
 };
 
+const sessionMiddleware = (next: any) => (res: any, req: any) => {
+  const cookieExist = getCookie(req, 'session');
+  if (cookieExist) {
+    const decryptedCookie = decrypt(cookieExist);
+    const user = JSON.parse(decryptedCookie);
+    req.user = user.username;
+  }
+  next(res, req);
+};
+
 uws
-  .ws('/api/*', {
+  .ws('/*', {
     idleTimeout: 32,
     maxBackpressure: 1024,
     maxPayloadLength: 512,
@@ -46,10 +58,18 @@ uws
         'An Http connection wants to become WebSocket, URL: ' + req.getUrl()
       );
 
+      let username = 'guest-' + Math.random().toString(36).substring(2, 6);
+      const cookieExist = getCookie(req, 'session');
+      if (cookieExist) {
+        const decryptedCookie = decrypt(cookieExist);
+        const user = JSON.parse(decryptedCookie);
+        username = user.username;
+      }
       /* This immediately calls open handler, you must not use res after this call  */
       res.upgrade(
         {
           url: req.getUrl(),
+          user: username
         },
         /* Spell these correctly */
         req.getHeader('sec-websocket-key'),
@@ -78,22 +98,12 @@ uws
     },
     close,
   })
-  .get('/api/*', (res, req) => {
-    res
-      .writeStatus('200 OK')
-      .writeHeader('IsExample', 'Yes')
-      .end('Your user agent is: ' + req.getHeader('user-agent') + ' thank you, come again!');
-  })
+  .get('/*', res => res.writeStatus('404').end('404 not found'))
+  .get('/api/user', sessionMiddleware((res: any, req: any) => {
+    res.end(`account ${JSON.stringify(req.user) || 'guest'}`);
+  }))
+  // temporary login for testing middleware
   .get('/api/auth/:name', (res, req) => {
-    const cookieExist = getCookie(req, 'session');
-    if (cookieExist) {
-      const decryptedCookie = decrypt(cookieExist);
-      const user = JSON.parse(decryptedCookie);
-      return res
-        .writeStatus('200 OK')
-        .end('welcome back ' + user.username);
-    }
-
     const cookieValue = JSON.stringify({
       username: req.getParameter(0) || 'guest'
     });
@@ -145,12 +155,4 @@ function getEntriesFromCookie(cookieString = '') {
     }
     return [name, value];
   });
-}
-
-function utf8_to_b64(str: any) {
-  return btoa(encodeURIComponent(str));
-}
-
-function b64_to_utf8(str: any) {
-  return decodeURIComponent(atob(str));
 }
