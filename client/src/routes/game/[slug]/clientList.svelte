@@ -6,8 +6,22 @@
 
 	const ready = () => send(EVENT.playerReady, {});
 	const takeSeat = (color: string) => send(EVENT.joinGame, { color });
-	const seatTaken = (color: string, client: string) => (seats[color] = client);
 	const seats: any = PLAYER_COLORS;
+
+	$: $state.clients, renderClientList();
+
+	const renderClientList = () => {
+		// remove clientIds from seats if they are not in the client list, and add them if they are
+		outer: for (const color of Object.keys(seats)) {
+			for (const client of $state.clients) {
+				if (client.color === color) {
+					seats[color] = client.clientId;
+					continue outer;
+				}
+			}
+			seats[color] = null;
+		}
+	};
 </script>
 
 your player name: {$state.you}
@@ -15,7 +29,7 @@ your player name: {$state.you}
 
 <div class="client-list">
 	<ul>
-		{#each Object.keys(PLAYER_COLORS) as color}
+		{#each Object.keys(seats) as color}
 			<li>
 				<i class="circle {color}" />
 				{#if seats[color]}
@@ -28,12 +42,9 @@ your player name: {$state.you}
 				{/if}
 			</li>
 		{/each}
-
 		{#each $state.clients as client}
-			{#if client.color}
-				{seatTaken(client.color, client.clientId)}
-			{:else}
-				<li>{client.clientId}</li>
+			{#if !client.color}
+				<p>{client.clientId}</p>
 			{/if}
 		{/each}
 	</ul>

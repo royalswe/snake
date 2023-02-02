@@ -17,9 +17,10 @@ export const sessions = new Map();
 export default new (class Game {
 
   public open(ws: WebSocket): void {
-    ws.client = new Client(ws);
-    ws.client.send(EVENT.open, { msg: ws.client.id });
-    ws.client.broadcast(EVENT.chat, { message: ws.client.id + ' joined the room' });
+    const username = ws?.user?.username || 'guest-' + Math.random().toString(36).substring(2, 6);
+    ws.client = new Client(ws, username);
+    ws.client.send(EVENT.open, { msg: username });
+    ws.client.broadcast(EVENT.chat, { message: username + ' joined the room' });
   }
 
   public listen(ws: WebSocket, message: BufferSource, _isBinary: boolean): void {
@@ -159,9 +160,6 @@ export default new (class Game {
       throw Error('Board parameter must be a integer');
     }
   }
-
-
-
 
   public close(ws: WebSocket) {
     try {

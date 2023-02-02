@@ -23,6 +23,11 @@ export function getCookie(req: any, name: any) {
   return (req.cookies ??= req.getHeader('cookie')).match(getCookie[name] ??= new RegExp(`(^|;)\\s*${name}\\s*=\\s*([^;]+)`))?.[2];
 }
 
+/**
+ * generate cookie string
+ * @param options 
+ * @returns 
+ */
 export function createSetCookie(options: Cookie): string {
   const {
     maxAge = new Date().getTime() + 1000 * 60 * 60 * 24 * 365, // one year
@@ -40,4 +45,19 @@ export function createSetCookie(options: Cookie): string {
     + `${secure ? '; Secure' : ''}`
     + `${httpOnly ? '; HttpOnly' : ''}`
     + `; SameSite=${sameSite}`;
+}
+
+/**
+ * Returns user object from encrypted cookie
+ * @param req 
+ * @returns 
+ */
+export function getUserByCookie(req: any) {
+  const cookieExist = getCookie(req, 'session');
+  if (cookieExist) {
+    const decryptedCookie = decrypt(cookieExist);
+    const user = JSON.parse(decryptedCookie);
+    return req.user = user;
+  }
+  return null;
 }

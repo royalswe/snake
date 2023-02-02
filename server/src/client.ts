@@ -15,7 +15,7 @@ export default class Client {
   status: string;
   gameState!: GameState;
 
-  constructor(ws: WebSocket, id = Math.random().toString(16).slice(2)) {
+  constructor(ws: WebSocket, id: string) {
     this.ws = ws;
     this.id = id;
     this.status = PLAYER_STATUS.spectating;

@@ -1,6 +1,6 @@
 import uWebSockets from 'uWebSockets.js';
 import { getErrorMessage, reportError } from './helpers/errorHandling';
-import { createSetCookie, decrypt, encrypt, getCookie } from './helpers/cookieHandler';
+import { createSetCookie, encrypt, getUserByCookie } from './helpers/cookieHandler';
 import { EVENT } from './constants/sharedConstants';
 import Game from './game';
 import Lobby from './lobby';
@@ -19,8 +19,6 @@ const uws = uWebSockets.SSLApp({
 });
 
 const open = (ws: any) => {
-  console.log(ws.user);
-
   if (ws.url === '/api/lobby') {
     Lobby.open(ws);
   } else if (ws.url === '/api/room') {
@@ -37,12 +35,7 @@ const close = (ws: any, _code: any, _msg: any): void => {
 };
 
 const sessionMiddleware = (next: any) => (res: any, req: any) => {
-  const cookieExist = getCookie(req, 'session');
-  if (cookieExist) {
-    const decryptedCookie = decrypt(cookieExist);
-    const user = JSON.parse(decryptedCookie);
-    req.user = user.username;
-  }
+  getUserByCookie(req);
   next(res, req);
 };
 
@@ -53,23 +46,11 @@ uws
     maxPayloadLength: 512,
 
     upgrade: (res, req, context) => {
-
-      console.log(
-        'An Http connection wants to become WebSocket, URL: ' + req.getUrl()
-      );
-
-      let username = 'guest-' + Math.random().toString(36).substring(2, 6);
-      const cookieExist = getCookie(req, 'session');
-      if (cookieExist) {
-        const decryptedCookie = decrypt(cookieExist);
-        const user = JSON.parse(decryptedCookie);
-        username = user.username;
-      }
       /* This immediately calls open handler, you must not use res after this call  */
       res.upgrade(
         {
           url: req.getUrl(),
-          user: username
+          user: getUserByCookie(req)
         },
         /* Spell these correctly */
         req.getHeader('sec-websocket-key'),
@@ -100,7 +81,7 @@ uws
   })
   .get('/*', res => res.writeStatus('404').end('404 not found'))
   .get('/api/user', sessionMiddleware((res: any, req: any) => {
-    res.end(`account ${JSON.stringify(req.user) || 'guest'}`);
+    res.end(`account ${JSON.stringify(req.user.username) || 'guest'}`);
   }))
   // temporary login for testing middleware
   .get('/api/auth/:name', (res, req) => {
@@ -131,28 +112,3 @@ uws.listen(port, (token) => {
 });
 
 export default uws;
-
-/**
- * @param {string} [cookieString='']
- * @return {[string,string][]} String Tuple
- */
-function getEntriesFromCookie(cookieString = '') {
-  return cookieString.split(';').map((pair) => {
-    const indexOfEquals = pair.indexOf('=');
-    let name;
-    let value;
-    if (indexOfEquals === -1) {
-      name = '';
-      value = pair.trim();
-    } else {
-      name = pair.substr(0, indexOfEquals).trim();
-      value = pair.substr(indexOfEquals + 1).trim();
-    }
-    const firstQuote = value.indexOf('"');
-    const lastQuote = value.lastIndexOf('"');
-    if (firstQuote !== -1 && lastQuote !== -1) {
-      value = value.substring(firstQuote + 1, lastQuote);
-    }
-    return [name, value];
-  });
-}
