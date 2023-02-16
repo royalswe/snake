@@ -2,6 +2,7 @@ import { board } from '$lib/stores/board';
 import { state } from '$lib/stores/state';
 import { chat } from '$lib/stores/chat';
 import { EVENT, GAME_STATUS, PLAYER_STATUS } from '$lib/constants';
+import type { UrlParams } from '$models/urlParams';
 
 const decoder = new TextDecoder("utf-8");
 let ws: WebSocket;
@@ -11,7 +12,7 @@ let ws: WebSocket;
  * @param params
  * @returns
  */
-export const connect = (socketURL: string, params?: Record<string, unknown>) => {
+export const connect = (socketURL: string, params?: UrlParams) => {
 	ws = new WebSocket(socketURL);
 	if (!ws) {
 		// Store an error in our state.  The function will be
@@ -23,8 +24,6 @@ export const connect = (socketURL: string, params?: Record<string, unknown>) => 
 	ws.binaryType = 'arraybuffer';
 
 	ws.addEventListener('open', () => {
-		// TODO: Set up ping/pong, etc.
-
 		if (params) {
 			console.log('Connected! lets join ' + params.room);
 			send(EVENT.joinRoom, { params });

@@ -4,7 +4,7 @@
   "scripts": {
     "start": "npm run build && node dist/app.js",
     "build": "rimraf ./dist && tsc",
-    "move": "npm run build && rm -rf ../../mongot_prod/snake.mongot.com/server && mv dist ../../mongot_prod/snake.mongot.com/server",
+    "move": "npm run build && rm -rf ./dist/models && rm -rf ../../mongot_prod/snake.mongot.com/server && mv dist ../../mongot_prod/snake.mongot.com/server",
     "dev": "NODE_ENV=development ts-node-dev --respawn src/app.ts",
     "dev:con": "nodemon --exec ts-node src/app.ts"
   },
@@ -18,7 +18,6 @@
     "typescript": "^4.9.4"
   },
   "dependencies": {
-    "client-sessions": "^0.8.0",
     "uWebSockets.js": "uNetworking/uWebSockets.js#v20.19.0"
   }
 }

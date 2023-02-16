@@ -53,14 +53,29 @@ export default new (class Game {
         client.color = clientMsg.color;
         client.setGamestate();
         client.status = PLAYER_STATUS.joined;
+
         if (client.session.status === GAME_STATUS.countDown) {
           // cancel timeout on client
-          client.session.timer.refresh();
+
+          client.session.timer = null;
+
+          // send game status to all clients
+          client.session.status = GAME_STATUS.waiting;
+          client.roomEmit(EVENT.gameStatus, { gameStatus: GAME_STATUS.waiting });
+          // change client status to joined if there status is ready
+          client.session.clients.forEach((client) => {
+            if (client.status === PLAYER_STATUS.ready) {
+              client.status = PLAYER_STATUS.joined;
+            }
+          });
         }
         client.send(EVENT.joinGame, { playerStatus: PLAYER_STATUS.joined });
         client.roomEmit(EVENT.roomStatus, {
           clients: this.updateClientList(client.session.room)
         });
+        console.log(client.session.clients
+        );
+
         break;
       }
 
@@ -78,6 +93,8 @@ export default new (class Game {
         );
 
         if (isEveryPlayerReady(session.clients)) {
+          // change game status to count down
+          session.status = GAME_STATUS.countDown;
           client.roomEmit(EVENT.gameStatus, { gameStatus: GAME_STATUS.countDown });
           // start count down
           session
@@ -138,17 +155,17 @@ export default new (class Game {
     return session;
   }
 
-  private updateClientList(room: string): object[] {
+  updateClientList(room: string): object[] {
     const session = this.getSession(room);
     const clients = [...session.clients].map((client: any) => ({ clientId: client.id, clientStatus: client.status, color: client.color }));
     return clients;
   }
 
-  public getSession(roomName: string): Session {
+  getSession(roomName: string): Session {
     return sessions.get(roomName);
   }
 
-  public validateUrlParameters(params: UrlParams): void {
+  validateUrlParameters(params: UrlParams): void {
     const { room, width, height } = params;
     if (!room || !width || !height) {
       throw Error('Parameters "room and board" must be set');
@@ -161,21 +178,20 @@ export default new (class Game {
     }
   }
 
-  public close(ws: WebSocket) {
+  close(ws: WebSocket) {
     try {
       if (ws.client) {
         ws.client.session.leave(ws.client);
       }
+
+      ws.client.roomEmit(EVENT.roomStatus, {
+        clients: this.updateClientList(ws.client.room)
+      });
+
     } catch (error) {
       console.error('remove client from session failed');
-      console.error('session output: ' + ws.client);
+      console.error(error);
     }
   }
-
-  /* Here we echo the message back, using compression if available */
-  //let ok = ws.send(message, isBinary, true); // sender only
-  //ws.publish('home/sensors/temperature', message, isBinary, true); // to all except the sender
-  //uws.publish(ws.client.room, JSON.stringify(serverMsg), isBinary, true); // to all
-
 
 })();

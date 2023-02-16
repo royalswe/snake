@@ -1,3 +1,4 @@
+import type { HttpResponse, HttpRequest } from 'uWebSockets.js';
 import uWebSockets from 'uWebSockets.js';
 import { getErrorMessage, reportError } from './helpers/errorHandling';
 import { createSetCookie, encrypt, getUserByCookie } from './helpers/cookieHandler';
@@ -34,7 +35,7 @@ const close = (ws: any, _code: any, _msg: any): void => {
   }
 };
 
-const sessionMiddleware = (next: any) => (res: any, req: any) => {
+const sessionMiddleware = (next: any) => (res: HttpResponse, req: HttpRequest) => {
   getUserByCookie(req);
   next(res, req);
 };
@@ -79,8 +80,8 @@ uws
     },
     close,
   })
-  .get('/*', res => res.writeStatus('404').end('404 not found'))
-  .get('/api/user', sessionMiddleware((res: any, req: any) => {
+  .get('/*', res => res.writeStatus('404').end('404 not found from server'))
+  .get('/api/user', sessionMiddleware((res: HttpResponse, req: any) => {
     res.end(`account ${JSON.stringify(req.user.username) || 'guest'}`);
   }))
   // temporary login for testing middleware

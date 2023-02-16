@@ -35,7 +35,7 @@
 				<div class="form-group">
 					<input type="text" bind:value={gameCode} placeholder="enter game code" />
 				</div>
-				<a href="/game/{gameCode}?board=46:30" class="btn btn-success"> Join Game </a>
+				<a href="/game?room={gameCode}&board=46:30" class="btn btn-success"> Join Game </a>
 			</div>
 		</div>
 	</div>

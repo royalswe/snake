@@ -1,23 +1,33 @@
 <script lang="ts">
+	import type { UrlParams } from '$models/urlParams';
 	import Snake from './snake.svelte';
 	import ErrorModule from '$lib/errorModule.svelte';
-	import { connect, send } from '$lib/ws';
-	import { page } from '$app/stores';
+	import { connect } from '$lib/ws';
 	import { onMount } from 'svelte';
 	import { state } from '$lib/stores/state';
 	import { chat } from '$lib/stores/chat';
 	import ClientList from './clientList.svelte';
 
-	const roomName = $page.data.room;
-	const params = $page.data;
+	$: roomName = '';
 
 	onMount(async () => {
+		// Get room name and board size from url
+		const url = new URLSearchParams(window.location.search);
+
+		roomName = url.get('room') as string;
+		const board = url.get('board');
+		const paramns: UrlParams = { room: roomName };
+		if (board) {
+			paramns.width = +board?.split(':')[0];
+			paramns.height = +board?.split(':')[1];
+		}
+
 		connect(
 			'wss://' +
 				location.hostname +
 				(location.hostname === 'localhost' ? ':5300' : '') +
 				'/api/room',
-			params
+			paramns
 		);
 	});
 </script>

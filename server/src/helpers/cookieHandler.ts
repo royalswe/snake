@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import { Cookie } from '../models/cookie';
+import { getErrorMessage, reportError } from './errorHandling';
 
 const algorithm = 'aes-256-cbc';
 const key = Buffer.from('01d3354789014fe55v8CC623s567Aa4F');
@@ -55,9 +56,13 @@ export function createSetCookie(options: Cookie): string {
 export function getUserByCookie(req: any) {
   const cookieExist = getCookie(req, 'session');
   if (cookieExist) {
-    const decryptedCookie = decrypt(cookieExist);
-    const user = JSON.parse(decryptedCookie);
-    return req.user = user;
+    try {
+      const decryptedCookie = decrypt(cookieExist);
+      const user = JSON.parse(decryptedCookie);
+      return req.user = user;
+    } catch (error) {
+      reportError({ message: getErrorMessage(error) });
+    }
   }
   return null;
 }

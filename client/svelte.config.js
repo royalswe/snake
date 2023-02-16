@@ -14,11 +14,10 @@ const config = {
 			// these options are set automatically — see below
 			pages: 'build',
 			assets: 'build',
-			fallback: 'index.html',
+			fallback: null,
 			precompress: false,
 			strict: true
 		}),
-		//adapter: adapter(),
 		alias: {
 			$src: path.resolve('./src'),
 			$routes: path.resolve('./src/routes')

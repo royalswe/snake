@@ -1,5 +1,5 @@
 export interface UrlParams {
-    room: string | undefined;
+    room: string | null;
     width?: number;
     height?: number;
     mode?: string;

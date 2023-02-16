@@ -24,4 +24,4 @@
 
     "javascript.inlayHints.parameterTypes.enabled": true,
     "javascript.inlayHints.functionLikeReturnTypes.enabled": true
-  }
+}

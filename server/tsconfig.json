@@ -102,7 +102,6 @@
     "suppressImplicitAnyIndexErrors": true               /* Skip type checking on index key types */                  
   },
   "exclude": [
-    "node_modules",
-    "dist"
+    "**/models/*"
   ]
 }
