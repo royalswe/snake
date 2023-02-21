@@ -6,7 +6,7 @@
 
 	const ready = () => send(EVENT.playerReady, {});
 	const takeSeat = (color: string) => send(EVENT.joinGame, { color });
-	const seats: any = PLAYER_COLORS;
+	const seats = PLAYER_COLORS;
 
 	$: $state.clients, renderClientList();
 

@@ -1,10 +1,18 @@
+interface PlayerColors {
+	[key: string]: string | null;
+	red: string | null;
+	blue: string | null;
+	green: string | null;
+	yellow: string | null;
+}
+
 // key for Svelte context
 export const BOARD = {
 	boardWidth: 50,
 	boardHeight: 50
 };
 
-export const PLAYER_COLORS = {
+export const PLAYER_COLORS: PlayerColors = {
 	red: null,
 	blue: null,
 	green: null,

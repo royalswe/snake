@@ -65,17 +65,17 @@ export default new (class Game {
           // change client status to joined if there status is ready
           client.session.clients.forEach((client) => {
             if (client.status === PLAYER_STATUS.ready) {
+              // change client status to joined
               client.status = PLAYER_STATUS.joined;
+              client.send(EVENT.playerReady, { playerStatus: PLAYER_STATUS.joined });
             }
           });
         }
+
         client.send(EVENT.joinGame, { playerStatus: PLAYER_STATUS.joined });
         client.roomEmit(EVENT.roomStatus, {
           clients: this.updateClientList(client.session.room)
         });
-        console.log(client.session.clients
-        );
-
         break;
       }
 
@@ -89,8 +89,9 @@ export default new (class Game {
           throw Error("game already started or you have not join the game"); // if game is allready started or player clicked ready when not joined
         }
         client.status = PLAYER_STATUS.ready;
-        client.send(EVENT.playerReady, { playerStatus: client.status },
-        );
+        // get key from value
+        const velocity = Object.keys(VELOCITY).find(key => VELOCITY[key] === client.gameState.vel);
+        client.send(EVENT.playerReady, { playerStatus: client.status, velocity });
 
         if (isEveryPlayerReady(session.clients)) {
           // change game status to count down
@@ -109,7 +110,6 @@ export default new (class Game {
                 if (winner) {
                   cancelTimer();
                   session.status = GAME_STATUS.waiting;
-
                   // client.send(EVENT.joinGame, { playerStatus: PLAYER_STATUS.joined });
                   client.roomEmit(EVENT.gameOver, { winner: winner, clients: this.updateClientList(client.session.room) });
                   // reset snakes
@@ -127,7 +127,7 @@ export default new (class Game {
       }
       case EVENT.movement: {
         if (client.status === PLAYER_STATUS.ready) {
-          client.gameState.vel = VELOCITY[clientMsg.key];
+          client.gameState.directionQueue.push(VELOCITY[clientMsg.key]);
         }
         break;
       }

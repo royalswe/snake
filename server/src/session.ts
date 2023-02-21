@@ -61,12 +61,19 @@ export default class Session {
   // F
   // G
   snakeGrow() {
-    //this.clients.forEach((client) => {
-    //((const client = this.clients.keys().next().value;
     for (const client of this.playingClients) {
       const state = client.gameState;
       if (!state) {
-        return console.log('player do not have any state');
+        console.error('player do not have any state');
+        continue;
+      }
+      if (client.status !== PLAYER_STATUS.ready) {
+        continue; // player lost
+      }
+
+      // take the first element of direction queue if it exist
+      if (client.gameState.directionQueue.length) {
+        state.vel = client.gameState.directionQueue.shift() || state.vel;
       }
 
       state.pos.y += state.vel.y;

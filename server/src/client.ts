@@ -29,6 +29,7 @@ export default class Client {
       color: this.color,
       pos: startPosition(width, height, this.color),
       vel: VELOCITY[Object.keys(VELOCITY)[COLOR[this.color]]],
+      directionQueue: [],
       snake: [],
       grid: { x: width, y: height },
     };

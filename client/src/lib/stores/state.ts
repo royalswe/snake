@@ -15,6 +15,7 @@ export interface Client {
 
 interface State {
 	you?: string;
+	velocity?: string;
 	board: Board;
 	gameStatus: GameStatus;
 	playerStatus: PlayeStatus;

@@ -40,11 +40,11 @@
 			if (!states) {
 				return console.log('no state on canvas loop');
 			}
-			requestAnimationFrame(() => {
-				states.forEach((state: GameState) => {
-					drawPlayer(state);
-				});
+			//requestAnimationFrame(() => {
+			states.forEach((state: GameState) => {
+				drawPlayer(state);
 			});
+			//});
 		});
 		ctx = canvas.getContext('2d');
 

@@ -33,7 +33,6 @@ export const connect = (socketURL: string, params?: UrlParams) => {
 
 	ws.addEventListener('message', ({ data }) => {
 		const msg = data instanceof ArrayBuffer ? JSON.parse(decoder.decode(data)) : JSON.parse(data);
-		console.log(msg);
 
 		switch (msg.type) {
 			case EVENT.gameState:
@@ -63,6 +62,7 @@ export const connect = (socketURL: string, params?: UrlParams) => {
 				break;
 			case EVENT.playerReady:
 				state.setPlayerStatus(msg.playerStatus);
+				state.update((state) => ({ ...state, velocity: msg.velocity }));
 				break;
 			case EVENT.gameOver:
 				state.update((state) => ({ ...state, playerStatus: state.playerStatus === PLAYER_STATUS.ready ? PLAYER_STATUS.joined : PLAYER_STATUS.spectating }));
