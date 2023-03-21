@@ -22,6 +22,6 @@ export function startPosition(width: number, height: number, key: string) {
 		yellow: { x: width - 3, y: 3 },
 	};
 
-	return map[key] || console.error(key + ' is not valid key for start position');
+	return map[key as keyof typeof map] || console.error(key + ' is not valid key for start position');
 
 };

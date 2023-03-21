@@ -1,26 +1,14 @@
-import crypto from 'crypto';
 import { Cookie } from '../models/cookie';
-import { getErrorMessage, reportError } from './errorHandling';
+import sessions from 'client-sessions';
 
-const algorithm = 'aes-256-cbc';
-const key = Buffer.from('01d3354789014fe55v8CC623s567Aa4F');
-const initVector = Buffer.from('61dgA54ggh55462Q');
-
-export function encrypt(cookie: any) {
-  const cipher = crypto.createCipheriv(algorithm, key, initVector);
-  let encryptedData = cipher.update(cookie, "utf-8", "hex");
-  encryptedData += cipher.final("hex");
-  return encryptedData;
-}
-
-export function decrypt(encryptedData: any) {
-  const decipher = crypto.createDecipheriv(algorithm, key, initVector);
-  let decryptedData = decipher.update(encryptedData, "hex", "utf-8");
-  decryptedData += decipher.final("utf8");
-  return decryptedData;
-}
-
-export function getCookie(req: any, name: any) {
+/**
+ * Get cookie by its name
+ * @param req 
+ * @param name 
+ * @returns 
+ */
+export function getCookie(req: any, name: string): string | null {
+  // @ts-ignore
   return (req.cookies ??= req.getHeader('cookie')).match(getCookie[name] ??= new RegExp(`(^|;)\\s*${name}\\s*=\\s*([^;]+)`))?.[2];
 }
 
@@ -54,15 +42,19 @@ export function createSetCookie(options: Cookie): string {
  * @returns 
  */
 export function getUserByCookie(req: any) {
-  const cookieExist = getCookie(req, 'session');
-  if (cookieExist) {
-    try {
-      const decryptedCookie = decrypt(cookieExist);
-      const user = JSON.parse(decryptedCookie);
-      return req.user = user;
-    } catch (error) {
-      reportError({ message: getErrorMessage(error) });
-    }
+  const cookie = getCookie(req, 'session');
+
+  if (cookie == null) {
+    return null; // no session cookie
   }
-  return null;
+
+  const user = sessions.util.decode({
+    cookieName: "session",
+    secret: "345gyu345g3785g785g578g563gf25673f56734f56723", // Random string as secret
+    duration: 3600 * 1000 * 24 * 365, // cookie expires after one year
+    activeDuration: 3600 * 1000 * 24 * 30, // cookie expire after 30 days if user is not active
+  }, cookie);
+
+  return user.content.user || null;
+
 }

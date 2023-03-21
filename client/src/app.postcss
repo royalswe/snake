@@ -1,8 +1,62 @@
 /* Write your global styles here, in PostCSS syntax */
+:root {
+	--p-1: 0.5rem;
+	--p-2: 1rem;
+}
+
 *,
 *::before,
 *::after {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
+}
+
+ul {
+	list-style: none;
+}
+
+.p-1 {
+	padding: var(--p-1);
+}
+
+.mx-2 {
+	margin-left: var(--p-2);
+	margin-right: var(--p-2);
+}
+
+.flex {
+	display: flex;
+}
+
+.flex-col {
+	flex-direction: column;
+}
+
+.flex-row {
+	flex-direction: row;
+}
+
+.flex-inline {
+	display: inline-flex;
+	align-items: center;
+}
+
+.justify-evenly {
+	justify-content: space-evenly;
+}
+
+.h-full {
+	height: 100%;
+}
+
+.bg-black {
+	background-color: #000;
+}
+.text-white {
+	color: #fff;
+}
+
+.gap-1 {
+	gap: var(--p-1);
 }

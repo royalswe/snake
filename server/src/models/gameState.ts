@@ -2,7 +2,7 @@ export interface GameState {
     color: string;
     pos: Cell;
     vel: Cell;
-    directionQueue: Cell[] | [];
+    directionQueue: Cell[];
     snake: Cell[];
     grid: Cell;
 }

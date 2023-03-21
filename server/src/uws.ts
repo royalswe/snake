@@ -1,7 +1,7 @@
 import type { HttpResponse, HttpRequest } from 'uWebSockets.js';
 import uWebSockets from 'uWebSockets.js';
 import { getErrorMessage, reportError } from './helpers/errorHandling';
-import { createSetCookie, encrypt, getUserByCookie } from './helpers/cookieHandler';
+import { getUserByCookie } from './helpers/cookieHandler';
 import { EVENT } from './constants/sharedConstants';
 import Game from './game';
 import Lobby from './lobby';
@@ -46,14 +46,18 @@ uws
     maxBackpressure: 1024,
     maxPayloadLength: 512,
 
+    /* This immediately calls open handler, you must not use res after this call  */
     upgrade: (res, req, context) => {
-      /* This immediately calls open handler, you must not use res after this call  */
+      // check origin 
+      if (process.env.NODE_ENV !== 'development' && req.getHeader('origin') !== 'https://snake.mongot.com') {
+        return console.log('invalid origin');
+      }
+
       res.upgrade(
         {
           url: req.getUrl(),
           user: getUserByCookie(req)
         },
-        /* Spell these correctly */
         req.getHeader('sec-websocket-key'),
         req.getHeader('sec-websocket-protocol'),
         req.getHeader('sec-websocket-extensions'),
@@ -84,26 +88,16 @@ uws
   .get('/api/user', sessionMiddleware((res: HttpResponse, req: any) => {
     res.end(`account ${JSON.stringify(req.user.username) || 'guest'}`);
   }))
-  // temporary login for testing middleware
-  .get('/api/auth/:name', (res, req) => {
-    const cookieValue = JSON.stringify({
-      username: req.getParameter(0) || 'guest'
-    });
 
-    const newCookie = createSetCookie({
-      name: 'session',
-      domain: req.getHeader('hostname'),
-      value: encrypt(cookieValue)
-    });
+  .post('/api/authenticate', (res, req: any) => {
+    if (process.env.NODE_ENV === 'development') {
+      res.writeHeader("Access-Control-Allow-Origin", req.getHeader('origin')); //allow cors
+      res.writeHeader("Access-Control-Allow-Credentials", "true");
+    }
+    // check if user is logged in with cookie middleware
+    const user = getUserByCookie(req);
 
-    res.writeHeader(
-      'Set-Cookie', newCookie
-    );
-
-    res
-      .writeStatus('200 OK')
-      .writeHeader('IsExample', 'Yes')
-      .end('Have fun ' + req.getParameter(0));
+    res.end(user?.username || 'guest');
   });
 
 uws.listen(port, (token) => {

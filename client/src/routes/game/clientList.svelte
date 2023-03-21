@@ -24,10 +24,9 @@
 	};
 </script>
 
-your player name: {$state.you}
-<br />
+<p>your player name: {$state.you}</p>
 
-<div class="client-list">
+<div class="client-list p-1">
 	<ul>
 		{#each Object.keys(seats) as color}
 			<li>
@@ -42,6 +41,8 @@ your player name: {$state.you}
 				{/if}
 			</li>
 		{/each}
+		<hr />
+
 		{#each $state.clients as client}
 			{#if !client.color}
 				<p>{client.clientId}</p>
@@ -54,6 +55,7 @@ your player name: {$state.you}
 	.client-list {
 		background-color: beige;
 		border: 1px solid gray;
+		color: #000;
 
 		& .circle {
 			border-radius: 100%;

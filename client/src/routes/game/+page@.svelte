@@ -5,8 +5,9 @@
 	import { connect } from '$lib/ws';
 	import { onMount } from 'svelte';
 	import { state } from '$lib/stores/state';
-	import { chat } from '$lib/stores/chat';
+	import Chat from './chat.svelte';
 	import ClientList from './clientList.svelte';
+	import './room.postcss';
 
 	$: roomName = '';
 
@@ -39,20 +40,23 @@
 
 <div class="wrapper">
 	<header>
-		<h1>Your game code is: <span id="gameCodeDisplay" />{roomName}</h1>
-		GameState: {$state.gameStatus} / PlayerState {$state.playerStatus}
+		<!-- snake img with title aside-->
+		<div class="flex-inline h-full">
+			<img src="/images/snake-pixel.256.png" width="100" alt="snake logo" />
+			<div class="mx-2 flex flex-col justify-evenly h-full">
+				<h4>Room name: {roomName}</h4>
+				<h4>GameState: {$state.gameStatus} / PlayerState: {$state.playerStatus}</h4>
+			</div>
+		</div>
 	</header>
 
 	<sidebar>
-		<ClientList />
-		<h4>Chat</h4>
-		<ul>
-			{#each $chat as chat}
-				<li>{chat.message}</li>
-			{/each}
-		</ul>
+		<div class="flex flex-col h-full p-1 gap-1">
+			<ClientList />
+			<Chat />
+		</div>
 	</sidebar>
-	<main>
+	<main class="p-1">
 		<Snake />
 	</main>
 
@@ -60,36 +64,3 @@
 		<ErrorModule errorMsg={$state.error} />
 	{/if}
 </div>
-
-<style lang="postcss">
-	.wrapper {
-		height: 100vh;
-		display: grid;
-		grid-template:
-			'header header'
-			'sidebar main' minmax(auto, calc(100vh - 75px)) / 350px auto;
-
-		@media (width < 600px) {
-			grid-template:
-				'header'
-				'main' 1fr
-				'sidebar';
-		}
-	}
-	header {
-		grid-area: header;
-		color: antiquewhite;
-		background-color: blue;
-	}
-	sidebar {
-		grid-area: sidebar;
-		background-color: orange;
-	}
-	main {
-		grid-area: main;
-		background-color: grey;
-		border: solid yellow 3px;
-		overflow: hidden;
-		min-height: 100px;
-	}
-</style>

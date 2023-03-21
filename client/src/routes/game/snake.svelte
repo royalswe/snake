@@ -26,7 +26,7 @@
 	};
 </script>
 
-<div class="game-container" bind:offsetWidth={w} bind:offsetHeight={h}>
+<div class="h-full" bind:offsetWidth={w} bind:offsetHeight={h}>
 	{#if $state.gameStatus === GAME_STATUS.countDown}
 		<CountDown />
 	{/if}
@@ -34,9 +34,3 @@
 </div>
 
 <svelte:window on:keydown={onKeyDown} />
-
-<style>
-	.game-container {
-		height: 100%;
-	}
-</style>

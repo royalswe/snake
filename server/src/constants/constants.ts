@@ -1,4 +1,13 @@
-export const VELOCITY = {
+
+type Velocity = {
+  [key: string]: { x: number; y: number; };
+};
+
+type Color = {
+  [key: string]: number;
+};
+
+export const VELOCITY: Velocity = {
   ArrowRight: { x: 1, y: 0 },
   ArrowLeft: { x: -1, y: 0 },
   ArrowUp: { x: 0, y: -1 },
@@ -6,7 +15,7 @@ export const VELOCITY = {
 } as const;
 
 
-export const COLOR = {
+export const COLOR: Color = {
   red: 0,
   blue: 1,
   green: 2,

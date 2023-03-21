@@ -88,28 +88,23 @@
 	function drawPlayer(state: GameState) {
 		const w = grid.width;
 		const h = grid.height;
-		const size = (w + h) / (state.grid.x + state.grid.y);
+		let size = (w + h) / (state.grid.x + state.grid.y);
 
 		const snake = state.snake;
+		ctx.fillStyle = state.color; //'#' + Math.floor(Math.random() * 16777215).toString(16);
 
 		for (let i = 0; i < snake.length; i++) {
 			const cell = snake[i];
-			ctx.fillStyle = state.color; //'#' + Math.floor(Math.random() * 16777215).toString(16);
+			//ctx.fillRect(cell.x * size, cell.y * size, size, size);
 
-			//ctx.beginPath();
-			//ctx.fillStyle = '#ccc';
-			//drawBorder(cell.x * size, cell.y * size, size, size);
-			//ctx.fillStyle = state.color;
-
-			ctx.fillRect(cell.x * size, cell.y * size, size, size);
-			//ctx.stroke();
+			ctx.beginPath();
+			ctx.arc(cell.x * size + size / 2, cell.y * size + size / 2, size / 2 - 0.5, 0, 2 * Math.PI);
+			ctx.fill();
+			ctx.lineWidth = 1;
+			ctx.strokeStyle = '#000000';
+			ctx.stroke();
 		}
 	}
-
-	// function drawBorder(xPos, yPos, w, h, thickness = 1) {
-	// 	ctx.fillStyle = '#000';
-	// 	ctx.fillRect(xPos - thickness, yPos - thickness, w + thickness * 2, h + thickness * 2);
-	// }
 </script>
 
 <canvas bind:this={canvas} />
