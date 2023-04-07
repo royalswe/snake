@@ -7,7 +7,6 @@
 	import { state } from '$lib/stores/state';
 	import Chat from './chat.svelte';
 	import ClientList from './clientList.svelte';
-	import './room.postcss';
 
 	$: roomName = '';
 
@@ -17,18 +16,19 @@
 
 		roomName = url.get('room') as string;
 		const board = url.get('board');
-		const paramns: UrlParams = { room: roomName };
+		const params: UrlParams = { room: roomName };
 		if (board) {
-			paramns.width = +board?.split(':')[0];
-			paramns.height = +board?.split(':')[1];
+			params.width = +board?.split(':')[0];
+			params.height = +board?.split(':')[1];
 		}
+		console.log(params);
 
 		connect(
 			'wss://' +
 				location.hostname +
 				(location.hostname === 'localhost' ? ':5300' : '') +
 				'/api/room',
-			paramns
+			params
 		);
 	});
 </script>
@@ -36,12 +36,13 @@
 <svelte:head>
 	<title>Snake</title>
 	<meta name="description" content="Svelte snake app" />
+	<style src="./room.postcss"></style>
 </svelte:head>
 
 <div class="wrapper">
 	<header>
 		<!-- snake img with title aside-->
-		<div class="flex-inline h-full">
+		<div class="inline-flex items-center h-full">
 			<img src="/images/snake-pixel.256.png" width="100" alt="snake logo" />
 			<div class="mx-2 flex flex-col justify-evenly h-full">
 				<h4>Room name: {roomName}</h4>
@@ -64,3 +65,7 @@
 		<ErrorModule errorMsg={$state.error} />
 	{/if}
 </div>
+
+<!-- <style lang="postcss">
+	@import './room.postcss';
+</style> -->

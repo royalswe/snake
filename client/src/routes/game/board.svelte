@@ -66,23 +66,26 @@
 
 		const w = grid.width;
 		const h = grid.height;
-		const step = (w + h) / (width + height);
 
+		// set the canvas width and height
 		ctx.canvas.width = w;
 		ctx.canvas.height = h;
 
-		ctx.fillStyle = 'purple';
-		ctx.fillRect(0, 0, w, h);
+		ctx.beginPath();
+		ctx.fillStyle = '#1F2A39';
+		ctx.rect(0, 0, w, h);
+		ctx.fill();
 
-		for (let x = 0; x <= w; x += step) {
-			ctx.moveTo(x, 0);
-			ctx.lineTo(x, h);
+		ctx.beginPath();
+		ctx.fillStyle = '#263445';
+		for (let column = 0; column < width; column++) {
+			for (let row = 0; row < height; row++) {
+				if ((row % 2 === 0 && column % 2 === 1) || (row % 2 === 1 && column % 2 === 0)) {
+					ctx.rect((column * w) / width, (row * h) / height, w / width, h / height);
+				}
+			}
 		}
-		for (let y = 0; y <= h; y += step) {
-			ctx.moveTo(0, y);
-			ctx.lineTo(w, y);
-		}
-		ctx.stroke();
+		ctx.fill();
 	}
 
 	function drawPlayer(state: GameState) {
@@ -95,7 +98,6 @@
 
 		for (let i = 0; i < snake.length; i++) {
 			const cell = snake[i];
-			//ctx.fillRect(cell.x * size, cell.y * size, size, size);
 
 			ctx.beginPath();
 			ctx.arc(cell.x * size + size / 2, cell.y * size + size / 2, size / 2 - 0.5, 0, 2 * Math.PI);

@@ -29,15 +29,21 @@
 <div class="client-list p-1">
 	<ul>
 		{#each Object.keys(seats) as color}
-			<li>
+			<li class="my-1">
 				<i class="circle {color}" />
 				{#if seats[color]}
 					{#if $state.you === seats[color] && $state.playerStatus === PLAYER_STATUS.joined}
-						<button on:click|once={ready}>Click when ready!</button>
+						<button
+							class="bg-blue-800 hover:bg-blue-900 text-white px-4 rounded"
+							on:click|once={ready}>Click when ready!</button
+						>
 					{/if}
 					{seats[color]}
 				{:else if $state.playerStatus === PLAYER_STATUS.spectating}
-					<button on:click|once={() => takeSeat(color)}>Take seat</button>
+					<button
+						class="bg-blue-500 hover:bg-blue-700 text-white px-4 rounded"
+						on:click|once={() => takeSeat(color)}>Take seat</button
+					>
 				{/if}
 			</li>
 		{/each}

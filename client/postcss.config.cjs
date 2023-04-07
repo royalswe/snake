@@ -1,4 +1,5 @@
 const autoprefixer = require('autoprefixer');
+const tailwindcss = require('tailwindcss');
 const postcssPresetEnv = require('postcss-preset-env');
 
 const config = {
@@ -11,6 +12,7 @@ const config = {
 				'media-query-ranges': true
 			}
 		}),
+		tailwindcss,
 		autoprefixer
 	]
 };

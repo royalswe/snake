@@ -62,7 +62,7 @@ export const connect = (socketURL: string, params?: UrlParams) => {
 				break;
 			case EVENT.playerReady:
 				state.setPlayerStatus(msg.playerStatus);
-				state.update((state) => ({ ...state, velocity: msg.velocity }));
+				//state.update((state) => ({ ...state, velocity: msg.velocity })); // is this needed?
 				break;
 			case EVENT.gameOver:
 				state.update((state) => ({ ...state, playerStatus: state.playerStatus === PLAYER_STATUS.ready ? PLAYER_STATUS.joined : PLAYER_STATUS.spectating }));

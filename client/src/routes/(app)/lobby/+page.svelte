@@ -11,32 +11,81 @@
 		);
 	});
 	let gameCode: string;
+	let boardWidth: string;
+	let boardHeight: string;
 </script>
 
 <svelte:head>
 	<title>Snake</title>
 	<meta name="description" content="Svelte snake app" />
 	<!-- TODO: remove bootstrap -->
-	<link
-		rel="stylesheet"
-		href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-		integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
-		crossorigin="anonymous"
-	/>
 </svelte:head>
 
-<section class="vh-100">
-	<div class="container h-100">
-		<div id="initialScreen" class="h-100">
-			<div class="d-flex flex-column align-items-center justify-content-center h-100">
-				<h1>Multiplayer Snake</h1>
-				<!-- <a href="/game" class="btn btn-success"> Create New Game </a> -->
-				<div>OR</div>
-				<div class="form-group">
-					<input type="text" bind:value={gameCode} placeholder="enter game code" />
-				</div>
-				<a href="/game?room={gameCode}&board=46:30" class="btn btn-success"> Join Game </a>
-			</div>
+<main class="flex mt-3 flex-col items-center w-full">
+	<h1 class="text-white">Snake lobby</h1>
+	<h2 class="m-2 text-white">Create a new room</h2>
+	<div class=" flex mt-3 flex-col items-center">
+		<span class="relative w-full">
+			<input type="text" name="room" required bind:value={gameCode} />
+			<label for="room">Room name</label>
+		</span>
+		<div class="flex w-full">
+			<span class="relative md:w-1/2 mr-1">
+				<input type="text" name="width" required bind:value={boardWidth} />
+				<label for="width">Board width</label>
+			</span>
+			<span class="relative md:w-1/2 ml-1">
+				<input type="text" name="height" required bind:value={boardHeight} />
+				<label for="height">Board height</label>
+			</span>
 		</div>
+		<a
+			href="/game?room={gameCode}&board={boardWidth}:{boardHeight}"
+			class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+		>
+			Join Game
+		</a>
 	</div>
-</section>
+</main>
+
+<style>
+	label {
+		transform: translateY(50%);
+		transition: all 0.2s ease-in-out;
+		position: absolute;
+		top: 5%;
+		left: 1em;
+		background: none;
+		color: #b3b3b3;
+		font-weight: normal;
+		cursor: text;
+		pointer-events: none;
+		font-family: sans-serif;
+	}
+
+	input {
+		display: block;
+		border-radius: 3px;
+		transition: border-color;
+		box-sizing: border-box;
+		background-color: white;
+		border-radius: 3px;
+		border: 1px solid #ddd;
+		box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
+		font-family: sans-serif;
+		font-size: 1em;
+		margin-right: 0;
+		margin-bottom: 0.75em;
+		padding: 0.5em 0.5em;
+		padding: 0.75em;
+		width: 100%;
+	}
+
+	input:focus ~ label,
+	input:valid ~ label {
+		top: -30%;
+		font-size: 0.8em;
+		padding: 0 0.3em;
+		background: #f9f9f9;
+	}
+</style>
