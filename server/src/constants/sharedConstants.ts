@@ -1,5 +1,5 @@
 export const FRAME_RATE = 50;
-export const COUNT_DOWN = 5200;
+export const COUNT_DOWN = 1200;
 
 export const PLAYER_STATUS = {
   spectating: 'spectating',

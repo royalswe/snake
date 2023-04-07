@@ -1,8 +1,8 @@
 import type { UrlParams } from './models/urlParams';
+import type { WebSocket } from 'uWebSockets.js';
 import Client from "./client";
 import Session from "./session";
 import { isEveryPlayerReady } from "./helpers/utils";
-import { WebSocket } from 'uWebSockets.js';
 import { VELOCITY } from './constants/constants';
 import { EVENT } from './constants/sharedConstants';
 import {
@@ -26,7 +26,7 @@ export default new (class Game {
   public listen(ws: WebSocket, message: BufferSource, _isBinary: boolean): void {
     const client: Client = ws.client;
 
-    const clientMsg = JSON.parse(decoder.decode(message));
+    const clientMsg: any = JSON.parse(decoder.decode(message));
 
     switch (clientMsg.type) {
       case EVENT.joinRoom: {
@@ -89,9 +89,7 @@ export default new (class Game {
           throw Error("game already started or you have not join the game"); // if game is allready started or player clicked ready when not joined
         }
         client.status = PLAYER_STATUS.ready;
-        // get key from value
-        const velocity = Object.keys(VELOCITY).find(key => VELOCITY[key] === client.gameState.vel);
-        client.send(EVENT.playerReady, { playerStatus: client.status, velocity });
+        client.send(EVENT.playerReady, { playerStatus: client.status });
 
         if (isEveryPlayerReady(session.clients)) {
           // change game status to count down

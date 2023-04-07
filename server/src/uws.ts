@@ -6,7 +6,7 @@ import { EVENT } from './constants/sharedConstants';
 import Game from './game';
 import Lobby from './lobby';
 
-const port = 5300;
+const port = process.env.PORT || 5300;
 
 const uws = uWebSockets.SSLApp({
   key_file_name:
@@ -100,7 +100,7 @@ uws
     res.end(user?.username || 'guest');
   });
 
-uws.listen(port, (token) => {
+uws.listen(+port, (token) => {
   token
     ? console.log(`Listening to uws ${port}`)
     : console.log(`Failed to listen uws port ${port}`);

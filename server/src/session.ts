@@ -61,6 +61,8 @@ export default class Session {
   // F
   // G
   snakeGrow() {
+    let lostPlayers = new Set(); // players that lost this round
+
     for (const client of this.playingClients) {
       const state = client.gameState;
       if (!state) {
@@ -68,7 +70,7 @@ export default class Session {
         continue;
       }
       if (client.status !== PLAYER_STATUS.ready) {
-        continue; // player lost
+        continue; // player allready lost
       }
 
       // take the first element of direction queue if it exist
@@ -80,39 +82,49 @@ export default class Session {
       state.pos.x += state.vel.x;
 
       for (const c of this.playingClients) {
-        if (this.isCollide({ y: state.pos.y, x: state.pos.x }, c.gameState)) {
+        if (this.isCollide(state.pos, c.gameState)) {
+          lostPlayers.add(client.color);
           client.status = PLAYER_STATUS.joined;
-          const winner = this.playingClients.filter((v) => v.status === PLAYER_STATUS.ready);
-          if (winner.length <= 1) {
-            // reset every player status
-            this.playingClients.forEach(client => {
-              if (client.status === PLAYER_STATUS.ready) {
-                client.status = PLAYER_STATUS.joined;
-              }
-            });
+        }
+      }
+      // snage grow
+      state.snake.push({ ...state.pos });
+    }
 
-            return winner.length ? 'The winner is ' + winner[0].color : 'Game Over';
+    // check collision again because it's possible to hit another snake head after growing
+    if (lostPlayers.size) {
+      for (const client of this.playingClients) {
+        if (client.status !== PLAYER_STATUS.ready) {
+          continue; // player allready lost
+        }
+        for (const opponent of this.playingClients) {
+          if (opponent.id === client.id) continue; // allready checked if snake hits himself
+          if (this.isCollide(client.gameState.pos, opponent.gameState)) {
+            client.status = PLAYER_STATUS.joined;
+            lostPlayers.add(client.color);
           }
         }
       }
 
-      // snage grow
-      state.snake.push({ ...state.pos });
+      // check if Game is over
+      const winner = this.playingClients.filter((c) => c.status === PLAYER_STATUS.ready);
+
+      if (!winner || !winner.length) {
+        this.resetPlayers();
+        return this.playingClients.length > 1 ? `It's a draw between ${[...lostPlayers].join(' and ')}` : 'Game over';
+      }
+      else if (winner.length === 1) {
+        this.resetPlayers();
+        return 'The winner is ' + winner[0].color;
+      }
     }
   }
   // H
   // I
   isCollide({ y, x }: Cell, stateB: GameState) {
-    // console.log(id, idB, x, stateB.pos.x, y, stateB.pos.y);
-    // if (id !== idB && x === stateB.pos.x && y === stateB.pos.y) {
-    // 	console.log('hits head');
-    // 	return true; // head hits head
-    // }
-
     if (stateB.snake.some((o) => o.x === x && o.y === y)) {
       return true; // snake hits snake
     }
-    //console.log('väggen', this.width, this.height);
 
     // snake hits wall
     return x >= this.width || y >= this.height || x < 0 || y < 0;
@@ -135,4 +147,19 @@ export default class Session {
     }
     this.clients.delete(client);
   }
+  // M
+  // N
+  // O
+  // P
+  // Q
+  // R
+  resetPlayers() {
+    // reset every player status
+    this.playingClients.forEach(client => {
+      if (client.status === PLAYER_STATUS.ready) {
+        client.status = PLAYER_STATUS.joined;
+      }
+    });
+  }
+  // S
 }
