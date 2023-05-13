@@ -21,7 +21,6 @@
 			params.width = +board?.split(':')[0];
 			params.height = +board?.split(':')[1];
 		}
-		console.log(params);
 
 		connect(
 			'wss://' +

@@ -1,15 +1,16 @@
 <header>
-	<img src="./images/snake-pixel.256.png" class="logo" alt="snake logo" />
+	<img src="./images/snake-pixel.256.png" class="logo ml-5" alt="snake logo" />
 	<nav>
 		<ul>
 			<li><a href="/">Home</a></li>
 			<li><a href="/lobby">Lobby</a></li>
-			<li><a href="#">Highscore</a></li>
+			<li />
 			<li><a href="#">Instructions</a></li>
 		</ul>
 	</nav>
-	<button class="btn" id="btn1">Log In</button>
-	<button class="btn" id="btn2">Sign Up</button>
+
+	<a class="btn btn1" href="https://mongot.com/login">Log In</a>
+	<a class="btn btn1" href="https://mongot.com/register">Sign Up</a>
 </header>
 <slot />
 
@@ -51,7 +52,7 @@
 		font-size: 15px;
 		font-weight: 600;
 	}
-	#btn1 {
+	.btn1 {
 		text-transform: uppercase;
 		background: linear-gradient(to bottom, #378de5 3%, #48789b 100%);
 		border-radius: 30px;

@@ -1,10 +1,10 @@
 <main>
 	<div class="ml-10 text">
-		<h1>blip.se, <br /> <span>Snake</span></h1>
+		<h1>blip.se<br /> <span>Snake</span></h1>
+		<p>This game is in early beta but you can try it out.</p>
 		<p>
 			Snake is a multiplayer game where you must slither and survive as long as possible. Challenge
-			your friends and try to be the last man standing in the arena. Think you can fill the whoel
-			board?
+			your friends and try to be the last man standing in the arena. Can you fill the entire board?
 		</p>
 	</div>
 	<div class="ml-10 buttons">
