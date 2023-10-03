@@ -13,21 +13,21 @@
     "test-native": "node --test test/*"
   },
   "devDependencies": {
-    "@total-typescript/ts-reset": "^0.4.2",
-    "@types/client-sessions": "^0.8.3",
-    "@types/jest": "^29.5.0",
-    "@types/node": "^20.3.1",
-    "@types/uws": "^0.13.3",
-    "jest": "^29.5.0",
+    "@total-typescript/ts-reset": "^0.5.1",
+    "@types/client-sessions": "^0.8.4",
+    "@types/jest": "^29.5.5",
+    "@types/node": "^20.8.2",
+    "@types/uws": "^0.13.4",
+    "jest": "^29.7.0",
     "node-dev": "^8.0.0",
-    "rimraf": "^5.0.1",
-    "ts-jest": "^29.1.0",
+    "rimraf": "^5.0.5",
+    "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.1.3"
+    "typescript": "^5.2.2"
   },
   "dependencies": {
     "client-sessions": "^0.8.0",
-    "uWebSockets.js": "uNetworking/uWebSockets.js#v20.30.0"
+    "uWebSockets.js": "uNetworking/uWebSockets.js#v20.32.0"
   }
 }
