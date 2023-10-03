@@ -100,8 +100,5 @@
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": false,                               /* Skip type checking all .d.ts files. */
     //"suppressImplicitAnyIndexErrors": true               /* Skip type checking on index key types */                  
-  },
-  "exclude": [
-    "**/models/*"
-  ]
+  }
 }

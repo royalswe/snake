@@ -7,7 +7,7 @@ const decoder = new TextDecoder('utf-8');
 export default new (class Lobby {
   public listen(ws: WebSocket, message: BufferSource, isBinary: boolean) {
     ws.subscribe('lobby'); // subscribe to the room name
-    const clientMsg = JSON.parse(decoder.decode(message));
+    const clientMsg: any = JSON.parse(decoder.decode(message));
     ws.send(clientMsg, isBinary, true); // sender only
   }
 

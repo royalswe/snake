@@ -88,8 +88,12 @@ export default new (class Game {
         if (session.status === GAME_STATUS.running || client.status !== PLAYER_STATUS.joined) {
           throw Error("game already started or you have not join the game"); // if game is allready started or player clicked ready when not joined
         }
+
         client.status = PLAYER_STATUS.ready;
         client.send(EVENT.playerReady, { playerStatus: client.status });
+        client.roomEmit(EVENT.roomStatus, {
+          clients: this.updateClientList(client.session.room)
+        });
 
         if (isEveryPlayerReady(session.clients)) {
           // change game status to count down

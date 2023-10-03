@@ -61,7 +61,7 @@
 	</main>
 
 	{#if $state.error}
-		<ErrorModule errorMsg={$state.error} />
+		<ErrorModule />
 	{/if}
 </div>
 

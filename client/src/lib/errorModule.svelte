@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { state } from '$lib/stores/state';
 
-	export let errorMsg: string;
-
 	const clearErrors = () => {
 		$state.error = undefined;
 	};
@@ -11,9 +9,9 @@
 <div class="overlay">
 	<div class="popup">
 		<h2>Ouch...</h2>
-		<a href="/#" class="close" on:click={clearErrors}>&times;</a>
-		<div class="content">
-			{errorMsg}
+		<button class="close" on:click={clearErrors}>&times;</button>
+		<div class="content text-gray-900">
+			{$state.error}
 		</div>
 	</div>
 </div>
@@ -46,7 +44,7 @@
 	}
 	.popup .close {
 		position: absolute;
-		top: 20px;
+		top: 5px;
 		right: 30px;
 		transition: all 200ms;
 		font-size: 30px;

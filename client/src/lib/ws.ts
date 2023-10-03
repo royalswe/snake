@@ -1,7 +1,7 @@
 import { board } from '$lib/stores/board';
-import { state } from '$lib/stores/state';
+import { state, type Client } from '$lib/stores/state';
 import { chat } from '$lib/stores/chat';
-import { EVENT, GAME_STATUS, PLAYER_STATUS } from '$lib/constants';
+import { EVENT, GAME_STATUS } from '$lib/constants';
 import type { UrlParams } from '$models/urlParams';
 
 const decoder = new TextDecoder("utf-8");
@@ -65,7 +65,16 @@ export const connect = (socketURL: string, params?: UrlParams) => {
 				//state.update((state) => ({ ...state, velocity: msg.velocity })); // is this needed?
 				break;
 			case EVENT.gameOver:
-				state.update((state) => ({ ...state, playerStatus: state.playerStatus === PLAYER_STATUS.ready ? PLAYER_STATUS.joined : PLAYER_STATUS.spectating }));
+				state.update((currentState) => {
+					const matchingPlayer = msg.clients.find((p: Client) => p.clientId === currentState.you);
+					if (matchingPlayer) {
+						return {
+							...currentState,
+							playerStatus: matchingPlayer.clientStatus
+						};
+					}
+					return currentState;
+				});
 				state.setGameStatus(GAME_STATUS.waiting);
 				chat.add({ message: msg.winner });
 				state.update((self) => ({ ...self, clients: msg.clients })); // update status of clients in room

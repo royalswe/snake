@@ -1,9 +1,10 @@
+interface PlayerColor {
+	id: string;
+	status: string;
+}
+
 interface PlayerColors {
-	[key: string]: string | null;
-	red: string | null;
-	blue: string | null;
-	green: string | null;
-	yellow: string | null;
+	[key: string]: PlayerColor | null;
 }
 
 // key for Svelte context
