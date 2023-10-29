@@ -7,7 +7,7 @@
     "start:dev": "nodemon",
     "build": "vite build",
     "move": "rm -rf ../../mongot_prod/snake.mongot.com/client && mv build ../../mongot_prod/snake.mongot.com/client",
-    "build-move": "vite build && rm -rf ../../mongot_prod/snake.mongot.com/client && mv build ../../mongot_prod/snake.mongot.com/client",
+    "build-move": "vite build && npm run move",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",

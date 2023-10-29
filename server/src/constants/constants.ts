@@ -1,4 +1,3 @@
-
 type Velocity = {
   [key: string]: { x: number; y: number; };
 };
@@ -21,3 +20,6 @@ export const COLOR: Color = {
   green: 2,
   yellow: 3,
 } as const;
+
+export const FRAME_RATE = 50;
+export const COUNT_DOWN = 1200;

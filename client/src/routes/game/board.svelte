@@ -7,7 +7,7 @@
 	import { onMount } from 'svelte';
 	import { state } from '$lib/stores/state';
 	import { board } from '$lib/stores/board';
-	import { GAME_STATUS } from '$lib/constants';
+	import { GAME_STATUS } from '$server/constants/status';
 
 	export let parentWidth: number;
 	export let parentHeight: number;

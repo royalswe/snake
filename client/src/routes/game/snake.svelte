@@ -3,7 +3,8 @@
 	import { send } from '$lib/ws';
 	import { state } from '$lib/stores/state';
 	import CountDown from './countDown.svelte';
-	import { EVENT, GAME_STATUS, PLAYER_STATUS } from '$lib/constants';
+	import { EVENT } from '$server/constants/events';
+	import { GAME_STATUS, PLAYER_STATUS } from '$server/constants/status';
 
 	let w, h;
 	$: snakeDirection = $state.velocity;

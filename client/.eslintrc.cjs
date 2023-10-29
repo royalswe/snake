@@ -18,6 +18,7 @@ module.exports = {
 		node: true
 	},
 	rules: {
+		"@typescript-eslint/no-explicit-any": "off",
 		'@typescript-eslint/ban-ts-comment': [
 		  'error',
 		  {'ts-ignore': 'allow-with-description'},

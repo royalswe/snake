@@ -19,6 +19,7 @@ const config = {
 			strict: true
 		}),
 		alias: {
+			$server: path.resolve('../server/src'),
 			$src: path.resolve('./src'),
 			$routes: path.resolve('./src/routes')
 		}

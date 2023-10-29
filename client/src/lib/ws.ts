@@ -1,8 +1,8 @@
-import { board } from '$lib/stores/board';
-import { state, type Client } from '$lib/stores/state';
-import { chat } from '$lib/stores/chat';
-import { EVENT, GAME_STATUS } from '$lib/constants';
+import { state } from '$lib/stores/state';
+import { EVENT } from '$server/constants/events';
 import type { UrlParams } from '$models/urlParams';
+import { gameMessageHandler } from './gameMessageHandler';
+import { lobbyMessageHandler } from './lobbyMessageHandler';
 
 const decoder = new TextDecoder("utf-8");
 let ws: WebSocket;
@@ -14,6 +14,8 @@ let ws: WebSocket;
  */
 export const connect = (socketURL: string, params?: UrlParams) => {
 	ws = new WebSocket(socketURL);
+	const context = socketURL.split('/').pop();
+
 	if (!ws) {
 		// Store an error in our state.  The function will be
 		// called with the current state;  this only adds the
@@ -29,62 +31,14 @@ export const connect = (socketURL: string, params?: UrlParams) => {
 			send(EVENT.joinRoom, { params });
 		}
 	});
-	ws.binaryType = "arraybuffer";
 
 	ws.addEventListener('message', ({ data }) => {
 		const msg = data instanceof ArrayBuffer ? JSON.parse(decoder.decode(data)) : JSON.parse(data);
 
-		switch (msg.type) {
-			case EVENT.gameState:
-				board.set(msg.data);
-				break;
-			case EVENT.open:
-				state.update((state) => ({ ...state, you: msg.msg }));
-				chat.add({ message: 'Welcome to the snake game!' });
-				break;
-			case EVENT.joinGame:
-				state.setPlayerStatus(msg.playerStatus);
-				break;
-			case EVENT.gameStatus:
-				state.setGameStatus(msg.gameStatus);
-				break;
-			case EVENT.joinRoom:
-				state.update((state) => ({
-					...state,
-					board: { width: msg.width, height: msg.height } // save the canvas measures
-				}));
-				break;
-			case EVENT.roomStatus:
-				state.update((self) => ({ ...self, clients: msg.clients })); // update status of clients in room
-				break;
-			case EVENT.chat:
-				chat.add(msg.msg);
-				break;
-			case EVENT.playerReady:
-				state.setPlayerStatus(msg.playerStatus);
-				//state.update((state) => ({ ...state, velocity: msg.velocity })); // is this needed?
-				break;
-			case EVENT.gameOver:
-				state.update((currentState) => {
-					const matchingPlayer = msg.clients.find((p: Client) => p.clientId === currentState.you);
-					if (matchingPlayer) {
-						return {
-							...currentState,
-							playerStatus: matchingPlayer.clientStatus
-						};
-					}
-					return currentState;
-				});
-				state.setGameStatus(GAME_STATUS.waiting);
-				chat.add({ message: msg.winner });
-				state.update((self) => ({ ...self, clients: msg.clients })); // update status of clients in room
-				break;
-			case EVENT.error:
-				state.update((state) => ({ ...state, error: msg.msg }));
-				break;
-			default:
-				console.log('unknown emit from server', msg);
-				break;
+		if (context === 'lobby') {
+			lobbyMessageHandler(msg);
+		} else if (context === 'room') {
+			gameMessageHandler(msg);
 		}
 	});
 
@@ -95,11 +49,15 @@ export const connect = (socketURL: string, params?: UrlParams) => {
 
 	ws.addEventListener('error', (err) => {
 		console.log('websocket error:', err);
+		state.update(s => ({ ...s, error: 'Server encountered an error' }));
 	});
 };
 
 export const send = (type: string, message: Record<string, unknown>): void => {
+	if (!ws || ws.readyState !== WebSocket.OPEN) {
+		console.error('WebSocket is not open.');
+		return;
+	}
 	message = Object.assign({ type }, message);
-	// Send the message to the server.
 	ws.send(JSON.stringify(message));
 };

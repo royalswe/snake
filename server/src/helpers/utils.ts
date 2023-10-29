@@ -1,5 +1,6 @@
+import type Session from '../session';
 import type Client from '../client';
-import { PLAYER_STATUS } from '../constants/sharedConstants';
+import { PLAYER_STATUS } from '../constants/status';
 
 export function makeid() {
 	let len = 6;
@@ -23,5 +24,12 @@ export function startPosition(width: number, height: number, key: string) {
 	};
 
 	return map[key as keyof typeof map] || console.error(key + ' is not valid key for start position');
-
 };
+
+export function getLobbyRooms(sessions: Map<string, Session>) {
+	return Array.from(sessions.values()).map(session => ({
+		name: session.room,
+		status: session.status,
+		clientIds: Array.from(session.clients).map(client => (client as Client).id)
+	}));
+}

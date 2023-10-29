@@ -2,7 +2,7 @@ import type { HttpResponse, HttpRequest } from 'uWebSockets.js';
 import uWebSockets from 'uWebSockets.js';
 import { getErrorMessage, reportError } from './helpers/errorHandling';
 import { getUserByCookie } from './helpers/cookieHandler';
-import { EVENT } from './constants/sharedConstants';
+import { EVENT } from './constants/events';
 import Game from './game';
 import Lobby from './lobby';
 

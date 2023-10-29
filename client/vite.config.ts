@@ -3,7 +3,6 @@ import type { UserConfig } from 'vite';
 import dns from 'dns';
 import mkcert from 'vite-plugin-mkcert';
 
-
 dns.setDefaultResultOrder('verbatim');
 
 const config: UserConfig = {

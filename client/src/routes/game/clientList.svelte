@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { state } from '$lib/stores/state';
 	import { send } from '$lib/ws';
-	import { EVENT, PLAYER_STATUS } from '$lib/constants';
+	import { EVENT } from '$server/constants/events';
+	import { PLAYER_STATUS } from '$server/constants/status';
 	import { PLAYER_COLORS } from '$lib/constants';
 
 	const ready = () => {

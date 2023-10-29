@@ -1,7 +1,8 @@
 import type { Cell, GameState } from './models/gameState';
 import type { UrlParams } from './models/urlParams';
 import type Client from './client';
-import { PLAYER_STATUS, COUNT_DOWN, GAME_STATUS } from "./constants/sharedConstants";
+import { PLAYER_STATUS, GAME_STATUS } from "./constants/status";
+import { COUNT_DOWN } from './constants/constants';
 import { isEveryPlayerReady } from "./helpers/utils";
 
 export default class Session {
