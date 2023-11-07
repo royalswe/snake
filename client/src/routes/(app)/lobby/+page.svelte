@@ -2,8 +2,10 @@
 	import { connect, send } from '$lib/ws';
 	import { onMount } from 'svelte';
 	import { rooms } from '$lib/stores/rooms';
+	import { clients } from '$lib/stores/onlineClients';
+	import Chat from '../../chat.svelte';
 
-	onMount(async () => {
+	onMount(() => {
 		connect(
 			'wss://' +
 				location.hostname +
@@ -37,13 +39,6 @@
 		const url = `/game?room=${roomName}&board=${boardWidth}:${boardHeight}`;
 		window.open(url, '_blank', 'width=1200,height=1000');
 	}
-
-	let chatMessages = [
-		{ sender: 'Alice', message: 'Hi there!' },
-		{ sender: 'Bob', message: 'Hello! Anyone up for a game?' }
-	];
-
-	let onlinePlayers = ['Alice', 'Bob', 'Charlie'];
 </script>
 
 <svelte:head>
@@ -56,28 +51,13 @@
 	<!-- Chat Sidebar -->
 	<div class="w-1/4 bg-gray-900 p-4 border-r border-gray-700">
 		<h2 class="text-2xl font-bold mb-4">Chat</h2>
-		<div
-			class="chat-messages bg-secondary h-64 overflow-y-scroll mb-4 border border-gray-700 p-4 rounded"
-		>
-			{#each chatMessages as chat}
-				<p><strong>{chat.sender}:</strong> {chat.message}</p>
-			{/each}
-		</div>
-		<input
-			type="text"
-			class="w-full p-2 rounded border border-gray-700 bg-gray-800 placeholder-gray-500"
-			placeholder="Type your message..."
-		/>
-		<button class="w-full mt-2 bg-blue-700 text-gray-200 py-2 rounded hover:bg-blue-800"
-			>Send</button
-		>
-
+		<Chat />
 		<!-- Online Players -->
 		<div class="mt-6">
 			<h3 class="text-xl font-bold mb-4">Online Players</h3>
 			<ul>
-				{#each onlinePlayers as player}
-					<li>{player}</li>
+				{#each $clients as client}
+					<li>{client}</li>
 				{/each}
 			</ul>
 		</div>
@@ -202,5 +182,17 @@
 	td,
 	th {
 		@apply py-2 px-4;
+	}
+
+	:global(.chat-messages) {
+		@apply h-64 mb-4 border border-gray-700 p-4 rounded;
+	}
+
+	:global(.chat-input) {
+		@apply w-full p-2 rounded border border-gray-700 bg-gray-800 placeholder-gray-500;
+	}
+
+	:global(.chat-submit) {
+		@apply w-full bg-blue-700 text-gray-200 py-1 px-2 my-1 rounded;
 	}
 </style>

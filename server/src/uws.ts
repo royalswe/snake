@@ -29,7 +29,7 @@ const open = (ws: any) => {
 
 const close = (ws: any, _code: any, _msg: any): void => {
   if (ws.url === '/api/lobby') {
-    console.log('client left lobby');
+    Lobby.close(ws);
   } else if (ws.url === '/api/room') {
     Game.close(ws);
   }
@@ -56,7 +56,7 @@ uws
       res.upgrade(
         {
           url: req.getUrl(),
-          user: getUserByCookie(req)
+          user: getUserByCookie(req) || 'guest-' + Math.random().toString(36).substring(2, 6)
         },
         req.getHeader('sec-websocket-key'),
         req.getHeader('sec-websocket-protocol'),
@@ -86,7 +86,7 @@ uws
   })
   .get('/*', res => res.writeStatus('404').end('404 not found from server'))
   .get('/api/user', sessionMiddleware((res: HttpResponse, req: any) => {
-    res.end(`account ${JSON.stringify(req.user.username) || 'guest'}`);
+    res.end(`account ${JSON.stringify(req.user?.username) || 'guest'}`);
   }))
 
   .post('/api/authenticate', (res, req: any) => {

@@ -14,6 +14,7 @@ export const EVENT = {
 
 export const LOBBY_EVENT = {
     updateRooms: 'update-rooms',
+    updateClients: 'update-clients',
     error: 'error',
     chat: 'chat',
 } as const;

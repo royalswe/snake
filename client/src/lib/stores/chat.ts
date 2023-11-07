@@ -2,7 +2,7 @@ import { writable } from 'svelte/store';
 
 type Message = {
 	datetime?: string;
-	user?: string;
+	sender?: string;
 	message: string;
 };
 

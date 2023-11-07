@@ -29,7 +29,7 @@ export function gameMessageHandler(msg: any) {
             state.update((self) => ({ ...self, clients: msg.clients })); // update status of clients in room
             break;
         case EVENT.chat:
-            chat.add(msg.msg);
+            chat.add({ sender: msg.clientId, message: msg.msg, datetime: msg.datetime });
             break;
         case EVENT.playerReady:
             state.setPlayerStatus(msg.playerStatus);

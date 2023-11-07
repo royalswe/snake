@@ -2,11 +2,11 @@
   "name": "snake-server",
   "version": "0.0.1",
   "scripts": {
-    "start": "npm run build && node dist/app.js",
+    "start": "ALIEN_UWS=1 node dist/app.js",
     "build": "rimraf ./dist && tsc -p tsconfig.prod.json",
     "move": "rm -rf ./dist/models && rm -rf ../../mongot_prod/snake.mongot.com/server && mv dist ../../mongot_prod/snake.mongot.com/server",
     "build-move": "npm run build && rm -rf ./dist/models && rm -rf ../../mongot_prod/snake.mongot.com/server && mv dist ../../mongot_prod/snake.mongot.com/server",
-    "dev": "ALIEN_UWS=1 NODE_ENV=development NODE_OPTIONS='--inspect' ts-node-dev --respawn src/app.ts",
+    "dev": "ALIEN_UWS=1 NODE_ENV=development ts-node-dev --respawn src/app.ts",
     "dev:con": "nodemon --exec ts-node src/app.ts",
     "test1": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest .",

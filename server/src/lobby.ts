@@ -8,34 +8,35 @@ import { getLobbyRooms } from './helpers/utils';
 const decoder = new TextDecoder('utf-8');
 
 export default new (class Lobby {
+  private onlineClients: Set<string> = new Set(); // Maintain a list of online clients by username
+
   public open(ws: WebSocket) {
-    const username = ws?.user?.username || 'guest-' + Math.random().toString(36).substring(2, 6);
-    ws.emitter = new Emitter(ws, username);
+    ws.emitter = new Emitter(ws);
+    ws.emitter.room = 'lobby';
     ws.subscribe('lobby'); // subscribe to the room name
     ws.emitter.send(EVENT.updateRooms, { msg: getLobbyRooms(sessions) });
+    this.onlineClients.add(ws.user); // Add the client's username to the online clients list
+    ws.emitter.roomEmit(EVENT.updateClients, { msg: [...this.onlineClients] }); // Send the online clients list to all clients
   }
+
   public listen(ws: WebSocket, message: BufferSource, isBinary: boolean) {
     const clientMsg: any = JSON.parse(decoder.decode(message));
-    ws.emitter.send(clientMsg, isBinary, true); // sender only
+    switch (clientMsg.type) {
+      case EVENT.chat:
+        // add datetime to message
+        clientMsg.datetime = new Date().toLocaleString();
+        ws.emitter.lobby(EVENT.chat, clientMsg, isBinary, true);
+        break;
+      default:
+        console.log('unknown emit from server', clientMsg);
+        break;
+    }
   }
 
-
-
-  // close(ws: WebSocket) {
-  //   try {
-  //     if (ws.client) {
-  //       ws.client.session.leave(ws.client);
-  //     }
-
-  //     ws.client.roomEmit(EVENT.roomStatus, {
-  //       clients: this.updateClientList(ws.client.room)
-  //     });
-
-  //   } catch (error) {
-  //     console.error('remove client from session failed');
-  //     console.error(error);
-  //   }
-  // }
+  close(ws: WebSocket) {
+    this.onlineClients.delete(ws.user); // Remove the client's username from the online clients list
+    ws.emitter.roomEmit(EVENT.updateClients, { msg: [...this.onlineClients] });
+  }
 
   // export function Lobby(ws: WebSocket, message: BufferSource, isBinary: boolean) {
   //   ws.subscribe('lobby'); // subscribe to the room name
@@ -48,18 +49,3 @@ export default new (class Lobby {
   //   // ws.send(JSON.stringify({ type: 'clientsPlaying', msg: sessions }));
   // };
 })();
-
-function stringifyWithoutCircularRefs(obj: any) {
-  const seen = new WeakSet();
-
-  return JSON.stringify(obj, (key, value) => {
-    if (typeof value === "object" && value !== null) {
-      if (seen.has(value)) {
-        // If we're revisiting an object we've seen before, skip it
-        return;
-      }
-      seen.add(value);
-    }
-    return value;
-  });
-}

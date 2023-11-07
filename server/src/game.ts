@@ -18,11 +18,10 @@ export const sessions = new Map<string, Session>();
 export default new (class Game {
 
   public open(ws: WebSocket): void {
-    const username = ws?.user?.username || 'guest-' + Math.random().toString(36).substring(2, 6);
-    ws.client = new Client(username);
-    ws.emitter = new Emitter(ws, username);
-    ws.emitter.send(EVENT.open, { msg: username });
-    ws.emitter.broadcast(EVENT.chat, { message: username + ' joined the room' });
+    ws.client = new Client(ws.username);
+    ws.emitter = new Emitter(ws);
+    ws.emitter.send(EVENT.open, { msg: ws.username });
+    ws.emitter.broadcast(EVENT.chat, { message: ws.username + ' joined the room' });
   }
 
   public listen(ws: WebSocket, message: BufferSource, _isBinary: boolean): void {
@@ -143,9 +142,8 @@ export default new (class Game {
       }
 
       case EVENT.chat: {
-        ws.emitter.roomEmit(EVENT.chat, {
-          msg: clientMsg.message,
-        });
+        clientMsg.datetime = new Date().toLocaleString();
+        ws.emitter.roomEmit(EVENT.chat, clientMsg);
         break;
       }
     }

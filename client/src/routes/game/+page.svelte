@@ -5,7 +5,7 @@
 	import { connect } from '$lib/ws';
 	import { onMount } from 'svelte';
 	import { state } from '$lib/stores/state';
-	import Chat from './chat.svelte';
+	import Chat from '../chat.svelte';
 	import ClientList from './clientList.svelte';
 
 	$: roomName = '';
@@ -65,6 +65,19 @@
 	{/if}
 </div>
 
-<!-- <style lang="postcss">
-	@import './room.postcss';
-</style> -->
+<style global lang="postcss">
+	.chat-messages {
+		@apply p-1 h-full bg-black;
+	}
+
+	.chat-input {
+		@apply mr-1 px-2 py-2 w-full rounded-md text-black;
+	}
+
+	.chat-submit {
+		@apply px-4 py-2 bg-blue-500 text-white rounded-md;
+	}
+	.chat-footer {
+		display: flex;
+	}
+</style>
