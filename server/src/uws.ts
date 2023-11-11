@@ -56,7 +56,7 @@ uws
       res.upgrade(
         {
           url: req.getUrl(),
-          user: getUserByCookie(req) || 'guest-' + Math.random().toString(36).substring(2, 6)
+          user: getUserByCookie(req)
         },
         req.getHeader('sec-websocket-key'),
         req.getHeader('sec-websocket-protocol'),

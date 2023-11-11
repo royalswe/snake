@@ -14,7 +14,7 @@
 	// A helper function to format the datetime in a readable format
 	function formatDate(datetime: string) {
 		const date = new Date(datetime);
-		return date.toLocaleTimeString('default', {
+		return date.toLocaleTimeString('sv-se', {
 			month: 'numeric',
 			day: 'numeric',
 			hour: '2-digit',
@@ -24,50 +24,44 @@
 	}
 </script>
 
-<ul class="chat-messages flex flex-col overflow-y-auto">
-	{#each $chat as chat (chat.datetime)}
-		<li class="{chat.sender === 'me' ? 'self-end' : 'self-start'} mb-2">
-			<div class="max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl">
-				<div
-					class="inline-block py-1 px-3 rounded-lg shadow {chat.sender === 'me'
-						? 'bg-blue-100'
-						: 'bg-gray-100'}"
-				>
-					<p class="text-xs md:text-sm text-gray-800 break-words">{chat.message}</p>
-					<div class="flex items-center justify-between text-xs text-gray-500 mt-1">
-						<span
-							class="{chat.sender === 'me'
-								? 'font-semibold text-blue-600'
-								: 'font-semibold text-gray-700'} mr-2">{chat.sender}</span
-						>
-						<!-- Make the sender name bold and colored when it's 'me', and grey otherwise -->
-						<span class="text-gray-400">{formatDate(chat.datetime)}</span>
-						<!-- Make the date less prominent with a lighter color -->
-					</div>
-				</div>
-			</div>
-		</li>
-	{/each}
-</ul>
+<div class="chat-messages flex flex-col">
+	<ul class="overflow-y-auto">
+		{#each $chat as chat}
+			<li class="mb-1 text-xs">
+				{#if chat.datetime}
+					<slot name="date" datetime={formatDate(chat.datetime)} />
+				{/if}
+				{#if chat.sender}
+					<slot name="sender" sender={chat.sender} />
+				{/if}
+				<slot name="message" message={chat.message}>
+					<i class="md:text-sm text-white">
+						{chat.message}
+					</i>
+				</slot>
+			</li>
+		{/each}
+	</ul>
 
-<span class="chat-footer">
-	<input
-		type="text"
-		bind:value={message}
-		class="chat-input"
-		placeholder="Type your message here"
-		on:keydown={(e) => {
-			if (e.key === 'Enter') {
+	<span class="chat-footer">
+		<input
+			type="text"
+			bind:value={message}
+			class="chat-input"
+			placeholder="Type your message here"
+			on:keydown={(e) => {
+				if (e.key === 'Enter') {
+					sendChat();
+				}
+			}}
+		/>
+
+		<button
+			class="chat-submit"
+			on:click={() => {
 				sendChat();
-			}
-		}}
-	/>
-
-	<button
-		class="chat-submit"
-		on:click={() => {
-			sendChat();
-		}}
-		>Send
-	</button>
-</span>
+			}}
+			>Send
+		</button>
+	</span>
+</div>

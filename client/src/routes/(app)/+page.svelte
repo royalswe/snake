@@ -8,7 +8,13 @@
 		</p>
 	</div>
 	<div class="ml-10 buttons">
-		<a href="/game?room=sara&amp;board=46:30" class="btn3">Quick game</a>
+		<button
+			class="btn3"
+			type="button"
+			on:click={() =>
+				window.open('/game?room=quick&board=46:30', '_blank', 'width=1200,height=1000')}
+			>Quick game</button
+		>
 	</div>
 	<div class="snake">
 		<img src="images/snake-green.png" alt="snake arena" />

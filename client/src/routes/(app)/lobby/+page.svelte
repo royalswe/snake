@@ -39,6 +39,11 @@
 		const url = `/game?room=${roomName}&board=${boardWidth}:${boardHeight}`;
 		window.open(url, '_blank', 'width=1200,height=1000');
 	}
+
+	function joinGame(roomName: string) {
+		const url = `/game?room=${roomName}`;
+		window.open(url, '_blank', 'width=1200,height=1000');
+	}
 </script>
 
 <svelte:head>
@@ -49,9 +54,12 @@
 
 <div class="flex h-screen text-gray-200">
 	<!-- Chat Sidebar -->
-	<div class="w-1/4 bg-gray-900 p-4 border-r border-gray-700">
+	<div class="w-1/4 bg-gray-900 p-4 border-r border-gray-700 lobby-chat-container">
 		<h2 class="text-2xl font-bold mb-4">Chat</h2>
-		<Chat />
+		<Chat>
+			<span slot="date" class="text-gray-500" let:datetime>{datetime}</span>
+			<span slot="sender" class="text-orange-500 mr-1" let:sender>{sender}:</span>
+		</Chat>
 		<!-- Online Players -->
 		<div class="mt-6">
 			<h3 class="text-xl font-bold mb-4">Online Players</h3>
@@ -69,8 +77,6 @@
 		<button class="btn bg-green-700 hover:bg-green-800" on:click={() => (showModal = true)}
 			>Create New Room</button
 		>
-		<a href="/game?room=sara&amp;board=46:30" class="btn3">Quick game</a>
-
 		<!-- Create Room Modal -->
 		{#if showModal}
 			<div
@@ -153,9 +159,10 @@
 							<td>{room.status}</td>
 							<td>No</td>
 							<td>
-								<a
-									href="/game?room={room.name}"
-									class="bg-blue-700 text-gray-200 py-1 px-2 rounded hover:bg-blue-800">Join</a
+								<button
+									type="button"
+									on:click={() => joinGame(room.name)}
+									class="bg-blue-700 text-gray-200 py-1 px-2 rounded hover:bg-blue-800">Join</button
 								>
 							</td>
 						</tr>
@@ -184,15 +191,15 @@
 		@apply py-2 px-4;
 	}
 
-	:global(.chat-messages) {
-		@apply h-64 mb-4 border border-gray-700 p-4 rounded;
+	:global(.lobby-chat-container .chat-messages ul) {
+		@apply h-72 mb-4 border border-gray-700 p-2 rounded;
 	}
 
-	:global(.chat-input) {
+	:global(.lobby-chat-container .chat-input) {
 		@apply w-full p-2 rounded border border-gray-700 bg-gray-800 placeholder-gray-500;
 	}
 
-	:global(.chat-submit) {
+	:global(.lobby-chat-container .chat-submit) {
 		@apply w-full bg-blue-700 text-gray-200 py-1 px-2 my-1 rounded;
 	}
 </style>

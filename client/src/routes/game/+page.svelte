@@ -53,7 +53,11 @@
 	<sidebar>
 		<div class="flex flex-col h-full p-1 gap-1">
 			<ClientList />
-			<Chat />
+			<div class="h-full overflow-hidden game-chat">
+				<Chat>
+					<span slot="sender" class="text-orange-500 mr-1" let:sender>{sender}:</span>
+				</Chat>
+			</div>
 		</div>
 	</sidebar>
 	<main class="p-1">
@@ -66,18 +70,23 @@
 </div>
 
 <style global lang="postcss">
-	.chat-messages {
-		@apply p-1 h-full bg-black;
-	}
+	.game-chat {
+		.chat-messages {
+			ul {
+				@apply p-1 h-full bg-black;
+			}
+			@apply h-full;
+		}
 
-	.chat-input {
-		@apply mr-1 px-2 py-2 w-full rounded-md text-black;
-	}
+		.chat-input {
+			@apply mr-1 px-2 py-2 w-full rounded-md text-black;
+		}
 
-	.chat-submit {
-		@apply px-4 py-2 bg-blue-500 text-white rounded-md;
-	}
-	.chat-footer {
-		display: flex;
+		.chat-submit {
+			@apply px-4 py-2 bg-blue-500 text-white rounded-md;
+		}
+		.chat-footer {
+			display: flex;
+		}
 	}
 </style>

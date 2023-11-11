@@ -11,7 +11,9 @@ export default new (class Lobby {
   private onlineClients: Set<string> = new Set(); // Maintain a list of online clients by username
 
   public open(ws: WebSocket) {
-    ws.emitter = new Emitter(ws);
+    const username = ws.user?.username || 'guest-' + Math.random().toString(36).substring(2, 6);
+
+    ws.emitter = new Emitter(ws, username);
     ws.emitter.room = 'lobby';
     ws.subscribe('lobby'); // subscribe to the room name
     ws.emitter.send(EVENT.updateRooms, { msg: getLobbyRooms(sessions) });

@@ -7,10 +7,10 @@ export default class Emitter {
     id: string;
     room!: string;
 
-    constructor(ws: WebSocket) {
+    constructor(ws: WebSocket, username: string) {
         this.emit = ws.send.bind(ws);
         this.publish = ws.publish.bind(ws);
-        this.id = ws.user;
+        this.id = username;
     }
 
 
