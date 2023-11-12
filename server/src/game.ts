@@ -39,9 +39,6 @@ export default new (class Game {
           throw Error("There is no room name");
         }
 
-        // update rooms in lobby
-        ws.emitter.lobby(LOBBY_EVENT.updateRooms, { msg: getLobbyRooms(sessions) });
-
         ws.emitter.room = roomName;
         ws.subscribe(roomName); // subscribe to the room name
 
@@ -54,6 +51,9 @@ export default new (class Game {
         ws.emitter.roomEmit(EVENT.roomStatus, {
           clients: this.updateClientList(roomName)
         });
+
+        // update rooms in lobby
+        ws.emitter.lobby(LOBBY_EVENT.updateRooms, { msg: getLobbyRooms(sessions) });
         break;
       }
 
@@ -115,14 +115,16 @@ export default new (class Game {
               session.playingClients = [...session.clients].filter((v) => v.status === PLAYER_STATUS.ready);
 
               ws.emitter.roomEmit(EVENT.gameStatus, { gameStatus });
+              ws.emitter.lobby(LOBBY_EVENT.updateRooms, { msg: getLobbyRooms(sessions) });
+
               const cancelTimer = session.gameIntervall(() => {
                 const winner = session.snakeGrow();
 
                 if (winner) {
                   cancelTimer();
                   session.status = GAME_STATUS.waiting;
-                  // client.send(EVENT.joinGame, { playerStatus: PLAYER_STATUS.joined });
                   ws.emitter.roomEmit(EVENT.gameOver, { winner: winner, clients: this.updateClientList(client.session.room) });
+                  ws.emitter.lobby(LOBBY_EVENT.updateRooms, { msg: getLobbyRooms(sessions) });
                   // reset snakes
                   session.playingClients.forEach(client => client.setGamestate());
                 } else {
@@ -134,6 +136,8 @@ export default new (class Game {
             })
             .catch((error: Error) => console.error(error));
         }
+        // update rooms in lobby
+        ws.emitter.lobby(LOBBY_EVENT.updateRooms, { msg: getLobbyRooms(sessions) });
         break;
       }
       case EVENT.movement: {
@@ -199,19 +203,23 @@ export default new (class Game {
   }
 
   close(ws: WebSocket) {
-    try {
-      if (ws.client) {
-        ws.client.session.leave(ws.client);
-      }
-
-      ws.emitter.roomEmit(EVENT.roomStatus, {
-        clients: this.updateClientList(ws.client.session.room)
-      });
-
-    } catch (error) {
-      console.error('remove client from session failed');
-      console.error(error);
+    const session = ws.client?.session;
+    if (!session) {
+      console.log('client is not in session');
     }
+    session.leave(ws.client);
+
+    if (session.clients.size === 0) {
+      sessions.delete(session.room);
+    }
+    else {
+      ws.emitter.roomEmit(EVENT.roomStatus, {
+        clients: this.updateClientList(session.room)
+      });
+    }
+
+    // update lobby rooms
+    ws.emitter.lobby(LOBBY_EVENT.updateRooms, { msg: getLobbyRooms(sessions) });
   }
 
 })();

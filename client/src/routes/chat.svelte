@@ -2,7 +2,9 @@
 	import { chat } from '$lib/stores/chat';
 	import { send } from '$lib/ws';
 	import { LOBBY_EVENT } from '$server/constants/events';
+	import { onMount } from 'svelte';
 	let message = '';
+	let chatContainer: HTMLElement;
 
 	const sendChat = () => {
 		if (message) {
@@ -10,6 +12,14 @@
 			message = '';
 		}
 	};
+
+	onMount(() => {
+		// Scroll to the bottom of the chat container when new messages are added
+		const observer = new MutationObserver(() => {
+			chatContainer.scrollTop = chatContainer.scrollHeight;
+		});
+		observer.observe(chatContainer, { childList: true });
+	});
 
 	// A helper function to format the datetime in a readable format
 	function formatDate(datetime: string) {
@@ -25,7 +35,7 @@
 </script>
 
 <div class="chat-messages flex flex-col">
-	<ul class="overflow-y-auto">
+	<ul class="overflow-y-auto" bind:this={chatContainer}>
 		{#each $chat as chat}
 			<li class="mb-1 text-xs">
 				{#if chat.datetime}

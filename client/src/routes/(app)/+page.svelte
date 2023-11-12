@@ -9,11 +9,14 @@
 	</div>
 	<div class="ml-10 buttons">
 		<button
-			class="btn3"
+			class="btn3 px-7 py-4 mr-2 bg-slate-100 hover:bg-slate-300 active:bg-slate-400"
 			type="button"
 			on:click={() =>
 				window.open('/game?room=quick&board=46:30', '_blank', 'width=1200,height=1000')}
-			>Quick game</button
+			>Quick game
+		</button>
+		<a href="/lobby" class="btn3 px-7 py-5 bg-sky-500 hover:bg-sky-600 active:bg-sky-700"
+			>Go to lobby</a
 		>
 	</div>
 	<div class="snake">
@@ -56,10 +59,7 @@
 		color: #e7e3e3;
 	}
 	.btn3 {
-		background: linear-gradient(to bottom, #cbcbcb 2%, #fff 100%);
-		padding: 15px 30px;
 		border: none;
-		outline: none;
 		text-transform: uppercase;
 		color: #1b1b1b;
 		font-size: 1em;

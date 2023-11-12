@@ -11,13 +11,13 @@ export default new (class Lobby {
   private onlineClients: Set<string> = new Set(); // Maintain a list of online clients by username
 
   public open(ws: WebSocket) {
-    const username = ws.user?.username || 'guest-' + Math.random().toString(36).substring(2, 6);
+    ws.username = ws.user?.username || 'guest-' + Math.random().toString(36).substring(2, 6);
 
-    ws.emitter = new Emitter(ws, username);
+    ws.emitter = new Emitter(ws, ws.username);
     ws.emitter.room = 'lobby';
     ws.subscribe('lobby'); // subscribe to the room name
     ws.emitter.send(EVENT.updateRooms, { msg: getLobbyRooms(sessions) });
-    this.onlineClients.add(ws.user); // Add the client's username to the online clients list
+    this.onlineClients.add(ws.username); // Add the client's username to the online clients list
     ws.emitter.roomEmit(EVENT.updateClients, { msg: [...this.onlineClients] }); // Send the online clients list to all clients
   }
 
@@ -36,7 +36,7 @@ export default new (class Lobby {
   }
 
   close(ws: WebSocket) {
-    this.onlineClients.delete(ws.user); // Remove the client's username from the online clients list
+    this.onlineClients.delete(ws.username); // Remove the client's username from the online clients list
     ws.emitter.roomEmit(EVENT.updateClients, { msg: [...this.onlineClients] });
   }
 

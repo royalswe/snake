@@ -38,6 +38,7 @@
 		const roomName = generateRoomName();
 		const url = `/game?room=${roomName}&board=${boardWidth}:${boardHeight}`;
 		window.open(url, '_blank', 'width=1200,height=1000');
+		showModal = false;
 	}
 
 	function joinGame(roomName: string) {
@@ -74,7 +75,7 @@
 	<!-- Game Rooms -->
 	<div class="flex-1 p-6 bg-c-blue-600">
 		<h1 class="text-4xl font-bold mb-6">Game Lobby</h1>
-		<button class="btn bg-green-700 hover:bg-green-800" on:click={() => (showModal = true)}
+		<button class="btn my-2 bg-green-700 hover:bg-green-800" on:click={() => (showModal = true)}
 			>Create New Room</button
 		>
 		<!-- Create Room Modal -->
@@ -129,7 +130,7 @@
 							>
 							<button
 								type="button"
-								class="btn bg-red-500 hover:bg-red-600 ml-2"
+								class="btn bg-red-500 hover:bg-red-600 ml-2 mr-2"
 								on:click={() => (showModal = false)}>Cancel</button
 							>
 						</div>
@@ -152,6 +153,21 @@
 					</tr>
 				</thead>
 				<tbody>
+					{#if $rooms.length === 0}
+						<tr>
+							<td colspan="5" class="text-center">No rooms available!</td>
+						</tr>
+						<tr>
+							<td colspan="5" class="text-center">
+								<button
+									type="button"
+									class="btn my-2 bg-green-700 hover:bg-green-800"
+									on:click={() => (showModal = true)}
+									>Create New Room
+								</button>
+							</td>
+						</tr>
+					{/if}
 					{#each $rooms as room}
 						<tr class="hover:bg-gray-800">
 							<td>{room.name}</td>
