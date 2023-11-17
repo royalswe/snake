@@ -10,7 +10,7 @@
 
 	$: roomName = '';
 
-	onMount(async () => {
+	onMount(() => {
 		// Get room name and board size from url
 		const url = new URLSearchParams(window.location.search);
 
@@ -30,6 +30,12 @@
 			params
 		);
 	});
+
+	let height = 'auto';
+
+	function handleHeightChange(event: any) {
+		height = event.detail.height + 8;
+	}
 </script>
 
 <svelte:head>
@@ -60,8 +66,8 @@
 			</div>
 		</div>
 	</sidebar>
-	<main class="p-1">
-		<Snake />
+	<main class="p-1" style="min-height:{height}px;">
+		<Snake on:canvasRezise={handleHeightChange} />
 	</main>
 
 	{#if $state.error}

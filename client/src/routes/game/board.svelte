@@ -4,7 +4,7 @@
 
 <script lang="ts">
 	import type { GameState } from '$models/gameState';
-	import { onMount } from 'svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
 	import { state } from '$lib/stores/state';
 	import { board } from '$lib/stores/board';
 	import { GAME_STATUS } from '$server/constants/status';
@@ -17,6 +17,8 @@
 
 	let canvas: HTMLCanvasElement;
 	let ctx: any;
+
+	const dispatch = createEventDispatcher();
 
 	$: $state.gameStatus === GAME_STATUS.countDown && drawCanvas();
 	$: (height || width) && drawCanvas();
@@ -48,13 +50,6 @@
 		});
 		ctx = canvas.getContext('2d');
 
-		// let { boardWidth, boardHeight } = getContext(BOARD);
-		// console.log(boardWidth, boardHeight);
-
-		// setTimeout(() => {
-		// 	drawCanvas();
-		// });
-
 		window.addEventListener('resize', delay(drawCanvas, 100));
 		return () => {
 			window.removeEventListener('resize', delay(drawCanvas, 100));
@@ -63,6 +58,7 @@
 
 	function drawCanvas() {
 		grid = calculateAspectRatioFit();
+		dispatch('canvasRezise', grid);
 
 		const w = grid.width;
 		const h = grid.height;

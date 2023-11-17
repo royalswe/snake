@@ -31,7 +31,7 @@
 	{#if $state.gameStatus === GAME_STATUS.countDown}
 		<CountDown />
 	{/if}
-	<Board parentWidth={w} parentHeight={h} />
+	<Board parentWidth={w} parentHeight={h} on:canvasRezise />
 </div>
 
 <svelte:window on:keydown={onKeyDown} />

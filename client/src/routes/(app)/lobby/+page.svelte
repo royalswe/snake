@@ -49,29 +49,11 @@
 
 <svelte:head>
 	<title>Snake</title>
-	<meta name="description" content="Svelte snake app" />
+	<meta name="description" content="Snake lobby" />
 	<!-- TODO: remove bootstrap -->
 </svelte:head>
 
-<div class="flex h-screen text-gray-200">
-	<!-- Chat Sidebar -->
-	<div class="w-1/4 bg-gray-900 p-4 border-r border-gray-700 lobby-chat-container">
-		<h2 class="text-2xl font-bold mb-4">Chat</h2>
-		<Chat>
-			<span slot="date" class="text-gray-500" let:datetime>{datetime}</span>
-			<span slot="sender" class="text-orange-500 mr-1" let:sender>{sender}:</span>
-		</Chat>
-		<!-- Online Players -->
-		<div class="mt-6">
-			<h3 class="text-xl font-bold mb-4">Online Players</h3>
-			<ul>
-				{#each $clients as client}
-					<li>{client}</li>
-				{/each}
-			</ul>
-		</div>
-	</div>
-
+<div class="flex flex-col sm:flex-row h-screen text-gray-200">
 	<!-- Game Rooms -->
 	<div class="flex-1 p-6 bg-c-blue-600">
 		<h1 class="text-4xl font-bold mb-6">Game Lobby</h1>
@@ -194,6 +176,23 @@
 				This is a space where players can gather, chat, and create or join existing game rooms. Have
 				fun and play fair!
 			</p>
+		</div>
+	</div>
+	<!-- Chat Sidebar -->
+	<div class="sm:w-1/4 w-full bg-gray-900 p-4 border-r border-gray-700 lobby-chat-container">
+		<h2 class="text-2xl font-bold mb-4">Chat</h2>
+		<Chat>
+			<span slot="date" class="text-gray-500" let:datetime>{datetime}</span>
+			<span slot="sender" class="text-orange-500 mr-1" let:sender>{sender}:</span>
+		</Chat>
+		<!-- Online Players -->
+		<div class="mt-6">
+			<h3 class="text-xl font-bold mb-4">Online Players</h3>
+			<ul>
+				{#each $clients as client}
+					<li>{client}</li>
+				{/each}
+			</ul>
 		</div>
 	</div>
 </div>
