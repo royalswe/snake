@@ -22,15 +22,15 @@
 	});
 
 	// A helper function to format the datetime in a readable format
-	function formatDate(datetime: string) {
-		const date = new Date(datetime);
-		return date.toLocaleTimeString('sv-se', {
-			month: 'numeric',
-			day: 'numeric',
-			hour: '2-digit',
-			minute: '2-digit',
-			hour12: false
-		});
+	function formatDate(dateString: string) {
+		// Split the date and time parts
+		const [datePart, timePart] = dateString.split(', ');
+		// Split the date into day, month
+		const [day, month] = datePart.split('/');
+		// Split the time and ignore seconds
+		const [hours, minutes] = timePart.split(':');
+
+		return `${month}/${day} ${hours}:${minutes}`;
 	}
 </script>
 

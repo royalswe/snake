@@ -15,6 +15,13 @@ export function lobbyMessageHandler(msg: any) {
         case EVENT.chat:
             chat.add({ sender: msg.clientId, message: msg.msg, datetime: msg.datetime });
             break;
+        case EVENT.updateChat:
+            const everyMessage = JSON.parse(msg.msg);
+            // set each object in msg.msg to chat
+            for (const ms of everyMessage) {
+                chat.add(JSON.parse(ms));
+            }
+            break;
         case EVENT.error:
             console.log('lobbyerror', msg);
             break;

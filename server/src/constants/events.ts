@@ -17,4 +17,5 @@ export const LOBBY_EVENT = {
     updateClients: 'update-clients',
     error: 'error',
     chat: 'chat',
+    updateChat: 'update-chat',
 } as const;
