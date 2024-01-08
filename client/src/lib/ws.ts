@@ -1,6 +1,6 @@
+import type { UrlParams } from '$models/urlParams';
 import { state } from '$lib/stores/state';
 import { EVENT } from '$server/constants/events';
-import type { UrlParams } from '$models/urlParams';
 import { gameMessageHandler } from './gameMessageHandler';
 import { lobbyMessageHandler } from './lobbyMessageHandler';
 

@@ -66,7 +66,7 @@ uws
     },
 
     open,
-    message: (ws, arrayBuffer, isBinary) => {
+    message: (ws: any, arrayBuffer, isBinary) => {
       try {
         if (ws.url === '/api/room') {
           return Game.listen(ws, arrayBuffer, isBinary);
@@ -84,7 +84,7 @@ uws
     },
     close,
   })
-  .get('/*', res => res.writeStatus('404').end('404 not found from server'))
+  .get('/*', res => { res.writeStatus('404').end('404 not found from server'); })
   .get('/api/user', sessionMiddleware((res: HttpResponse, req: any) => {
     res.end(`account ${JSON.stringify(req.user?.username) || 'guest'}`);
   }))

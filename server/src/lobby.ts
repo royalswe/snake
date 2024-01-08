@@ -1,6 +1,7 @@
-import type { WebSocket } from 'uWebSockets.js';
+import type { WebSocket } from './models/webSocket';
 
 import fs from 'fs';
+import path from 'path';
 import lobbyChat from './snakeChat.json';
 import { sessions } from './game';
 import Emitter from './emitter';
@@ -8,7 +9,7 @@ import { LOBBY_EVENT as EVENT } from './constants/events';
 import { getLobbyRooms } from './helpers/utils';
 
 const decoder = new TextDecoder('utf-8');
-const lobbyChatPath = './src/snakeChat.json';
+const lobbyChatPath = path.join(__dirname, 'snakeChat.json');
 
 export default new (class Lobby {
   private onlineClients: Set<string> = new Set(); // Maintain a list of online clients by username

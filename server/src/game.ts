@@ -1,5 +1,5 @@
 import type { UrlParams } from './models/urlParams';
-import type { WebSocket } from 'uWebSockets.js';
+import type { WebSocket } from './models/webSocket';
 
 import Client from "./client";
 import Session from "./session";
@@ -16,7 +16,12 @@ const decoder = new TextDecoder("utf-8");
 export const sessions = new Map<string, Session>();
 
 export default new (class Game {
-
+  /**
+   * Opens a WebSocket connection and performs the necessary setup.
+   *
+   * @param {WebSocket} ws - The WebSocket connection object.
+   * @return {void}
+   */
   public open(ws: WebSocket): void {
     const username = ws.user?.username || 'guest-' + Math.random().toString(36).substring(2, 6);
 

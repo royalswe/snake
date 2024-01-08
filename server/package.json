@@ -1,16 +1,19 @@
 {
   "name": "snake-server",
   "version": "0.0.1",
+  "config":{
+    "cookie": "COOKIE_SECRET=s3cr3t"
+  },
   "scripts": {
     "start": "ALIEN_UWS=1 node dist/app.js",
     "build": "rimraf ./dist && tsc -p tsconfig.prod.json",
     "move": "rm -rf ./dist/models && rm -rf ../../mongot_prod/snake.mongot.com/server && mv dist ../../mongot_prod/snake.mongot.com/server",
     "build-move": "npm run build && rm -rf ./dist/models && rm -rf ../../mongot_prod/snake.mongot.com/server && mv dist ../../mongot_prod/snake.mongot.com/server",
-    "dev": "ALIEN_UWS=1 NODE_ENV=development ts-node-dev --respawn --ignore-watch src/snakeChat.json src/app.ts",
+    "dev": "ALIEN_UWS=1 COOKIE_SECRET=$npm_package_config_cookie NODE_ENV=development ts-node-dev --inspect --respawn --ignore-watch src/snakeChat.json src/app.ts",
     "dev:con": "nodemon --exec ts-node src/app.ts",
     "test1": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest .",
-    "test-native": "node --test test/*"
+    "preview": "NODE_ENV=development NODE_OPTIONS='--inspect' node dist/app.js"
   },
   "devDependencies": {
     "@total-typescript/ts-reset": "^0.5.1",
@@ -28,6 +31,6 @@
   },
   "dependencies": {
     "client-sessions": "^0.8.0",
-    "uWebSockets.js": "uNetworking/uWebSockets.js#v20.32.0"
+    "uWebSockets.js": "uNetworking/uWebSockets.js#v20.38.0"
   }
 }

@@ -50,11 +50,11 @@ export function getUserByCookie(req: any) {
 
   const user = sessions.util.decode({
     cookieName: "session",
-    secret: "345gyu345g3785g785g578g563gf25673f56734f56723", // Random string as secret
+    secret: process.env.COOKIE_SECRET || "", // Random string as secret
     duration: 3600 * 1000 * 24 * 365, // cookie expires after one year
     activeDuration: 3600 * 1000 * 24 * 30, // cookie expire after 30 days if user is not active
   }, cookie);
 
-  return user.content.user || null;
+  return user?.content?.user || null;
 
 }

@@ -1,4 +1,4 @@
-import type { WebSocket } from 'uWebSockets.js';
+import type { WebSocket } from './models/webSocket'; // Replace with the actual path to your custom type definitions
 import uws from "./uws";
 
 export default class Emitter {
