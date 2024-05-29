@@ -122,7 +122,7 @@ export default new (class Game {
               ws.emitter.roomEmit(EVENT.gameStatus, { gameStatus });
               ws.emitter.lobby(LOBBY_EVENT.updateRooms, { msg: getLobbyRooms(sessions) });
 
-              const cancelTimer = session.gameIntervall(() => {
+              const cancelTimer = session.gameInterval(() => {
                 const winner = session.snakeGrow();
 
                 if (winner) {

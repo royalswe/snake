@@ -37,19 +37,20 @@ export default class Session {
       }, duration);
     });
   }
-  gameIntervall(callback: Function, interval = 500) {
+  gameInterval(callback: Function, interval = 500) {
     let counter = 1;
     let timeoutId: NodeJS.Timeout;
-    const startTime = Date.now();
+    const startTime = performance.now();
 
     function main() {
-      const nowTime = Date.now();
       const nextTime = startTime + counter * interval;
-      timeoutId = setTimeout(main, interval - (nowTime - nextTime));
+      timeoutId = setTimeout(main, interval - (performance.now() - nextTime));
 
-      counter += 1;
+      counter++;
       callback();
     }
+    // // Run the callback immediately
+    // callback();
 
     timeoutId = setTimeout(main, interval);
 

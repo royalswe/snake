@@ -21,5 +21,5 @@ export const COLOR: Color = {
   yellow: 3,
 } as const;
 
-export const FRAME_RATE = 50;
-export const COUNT_DOWN = 1200;
+export const FRAME_RATE = 30;
+export const COUNT_DOWN = 5400;
