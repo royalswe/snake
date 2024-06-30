@@ -1,9 +1,10 @@
 import type { UrlParams } from '$models/urlParams';
-import { state } from '$lib/stores/state';
+import { useState } from '$lib/stores/state.svelte';
 import { EVENT } from '$server/constants/events';
 import { gameMessageHandler } from './gameMessageHandler';
 import { lobbyMessageHandler } from './lobbyMessageHandler';
 
+const states = useState();
 const decoder = new TextDecoder("utf-8");
 let ws: WebSocket;
 /**
@@ -20,7 +21,7 @@ export const connect = (socketURL: string, params?: UrlParams) => {
 		// Store an error in our state.  The function will be
 		// called with the current state;  this only adds the
 		// error.
-		state.update((s) => ({ ...s, error: 'Unable to connect' }));
+		states.error = 'Unable to connect';
 		return;
 	}
 	ws.binaryType = 'arraybuffer';
@@ -49,7 +50,7 @@ export const connect = (socketURL: string, params?: UrlParams) => {
 
 	ws.addEventListener('error', (err) => {
 		console.log('websocket error:', err);
-		state.update(s => ({ ...s, error: 'Server encountered an error' }));
+		states.error = 'Server encountered an error';
 	});
 };
 

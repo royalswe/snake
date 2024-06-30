@@ -13,7 +13,7 @@
 					href="https://mongot.com"
 					class="flex items-center text-white hover:text-blue-300 text-base font-bold transition"
 				>
-					<i class="fa fa-home mr-2" aria-hidden="true" role="img" aria-label="Home Icon" />
+					<i class="fa fa-home mr-2" aria-hidden="true" role="img" aria-label="Home Icon"></i>
 					Home
 				</a>
 			</li>
@@ -22,7 +22,7 @@
 					href="/lobby"
 					class="flex items-center text-white hover:text-blue-300 text-base font-bold transition"
 				>
-					<i class="fa fa-globe mr-2" aria-hidden="true" role="img" aria-label="Globe Icon" />
+					<i class="fa fa-globe mr-2" aria-hidden="true" role="img" aria-label="Globe Icon"></i>
 					Lobby
 				</a>
 			</li>
@@ -31,7 +31,7 @@
 					href="/"
 					class="flex items-center text-white hover:text-blue-300 text-base font-bold transition"
 				>
-					<i class="fa fa-trophy mr-2" aria-hidden="true" role="img" aria-label="Trophy Icon" />
+					<i class="fa fa-trophy mr-2" aria-hidden="true" role="img" aria-label="Trophy Icon"></i>
 					High Score
 				</a>
 			</li>
@@ -42,12 +42,8 @@
 					href="https://mongot.com/register"
 					class="flex items-center text-white hover:text-blue-300 text-base font-bold transition"
 				>
-					<i
-						class="fa fa-user-plus mr-2"
-						aria-hidden="true"
-						role="img"
-						aria-label="User Plus Icon"
-					/>
+					<i class="fa fa-user-plus mr-2" aria-hidden="true" role="img" aria-label="User Plus Icon"
+					></i>
 					Register
 				</a>
 			</li>
@@ -56,7 +52,7 @@
 					href="https://mongot.com/login"
 					class="flex items-center text-white hover:text-blue-300 text-base font-bold transition"
 				>
-					<i class="fa fa-sign-in mr-2" aria-hidden="true" role="img" aria-label="Sign In Icon" />
+					<i class="fa fa-sign-in mr-2" aria-hidden="true" role="img" aria-label="Sign In Icon"></i>
 					Login
 				</a>
 			</li>

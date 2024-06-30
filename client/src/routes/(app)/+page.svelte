@@ -18,7 +18,7 @@
 		<button
 			class="px-7 py-4 bg-slate-100 hover:bg-slate-300 active:bg-slate-400 text-lg font-bold text-black uppercase rounded-full shadow-md"
 			type="button"
-			on:click={() =>
+			onclick={() =>
 				window.open('/game?room=quick&board=46:30', '_blank', 'width=1200,height=1000')}
 			>Quick game
 		</button>

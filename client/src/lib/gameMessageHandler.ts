@@ -1,57 +1,53 @@
 import { EVENT } from '$server/constants/events';
-import { board } from '$lib/stores/board';
-import { state, type Client } from '$lib/stores/state';
-import { chat } from '$lib/stores/chat';
+import { BOARD } from './constants';
+import { useSnakes } from '$lib/stores/snakes.svelte';
+import { useState, type Client } from '$lib/stores/state.svelte';
+import { useChat } from '$lib/stores/chat.svelte';
 import { GAME_STATUS } from '$server/constants/status';
+
+const states = useState();
+const snakes = useSnakes();
+const chat = useChat();
 
 export function gameMessageHandler(msg: any) {
     switch (msg.type) {
         case EVENT.gameState:
-            board.set(msg.data);
+            snakes.state = msg.data;
             break;
         case EVENT.open:
-            state.update((currentState) => ({ ...currentState, you: msg.msg }));
+            states.you = msg.msg;
             chat.add({ message: 'Welcome to the snake game!' });
             break;
         case EVENT.joinGame:
-            state.setPlayerStatus(msg.playerStatus);
+            states.playerStatus = msg.playerStatus;
             break;
         case EVENT.gameStatus:
-            state.setGameStatus(msg.gameStatus);
+            states.gameStatus = msg.gameStatus;
             break;
         case EVENT.joinRoom:
-            state.update((currentState) => ({
-                ...currentState,
-                board: { width: msg.width, height: msg.height } // save the canvas measures
-            }));
+            BOARD.height = msg.height;
+            BOARD.width = msg.width;
             break;
         case EVENT.roomStatus:
-            state.update((self) => ({ ...self, clients: msg.clients })); // update status of clients in room
+            states.clients = msg.clients;
             break;
         case EVENT.chat:
             chat.add({ sender: msg.clientId, message: msg.msg, datetime: msg.datetime });
             break;
         case EVENT.playerReady:
-            state.setPlayerStatus(msg.playerStatus);
-            //state.update((state) => ({ ...state, velocity: msg.velocity })); // is this needed?
+            states.playerStatus = msg.playerStatus;
             break;
         case EVENT.gameOver:
-            state.update((currentState) => {
-                const matchingPlayer = msg.clients.find((p: Client) => p.clientId === currentState.you);
-                if (matchingPlayer) {
-                    return {
-                        ...currentState,
-                        playerStatus: matchingPlayer.clientStatus
-                    };
-                }
-                return currentState;
-            });
-            state.setGameStatus(GAME_STATUS.waiting);
+            const matchingPlayer = msg.clients.find((p: Client) => p.clientId === states.you);
+            if (matchingPlayer) {
+                states.playerStatus = matchingPlayer.clientStatus;
+            }
+            states.gameStatus = GAME_STATUS.waiting;
             chat.add({ message: msg.winner });
-            state.update((self) => ({ ...self, clients: msg.clients })); // update status of clients in room
+            states.clients = msg.clients;
             break;
         case EVENT.error:
-            state.update((currentState) => ({ ...currentState, error: msg.msg }));
+            states.error = msg.msg;
             break;
         default:
             console.log('unknown emit from server', msg);

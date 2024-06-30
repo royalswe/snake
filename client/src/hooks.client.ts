@@ -1,6 +1,7 @@
 export default document.cookie = "cookiename=value";
-import { state } from '$lib/stores/state';
+import { useState } from '$lib/stores/state.svelte';
 
+const states = useState();
 // check with server if user is logged in, if so, set user in state;
 fetch('https://localhost:5300/api/authenticate', {
     method: 'POST',
@@ -15,7 +16,7 @@ fetch('https://localhost:5300/api/authenticate', {
         }
     })
     .then(res => {
-        state.update((state) => ({ ...state, you: res }));
+        states.you = res;
         console.log('username:', res);
     })
     .catch(err => {

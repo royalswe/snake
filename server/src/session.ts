@@ -37,7 +37,7 @@ export default class Session {
       }, duration);
     });
   }
-  gameInterval(callback: Function, interval = 500) {
+  gameInterval(callback: Function, interval: number) {
     let counter = 1;
     let timeoutId: NodeJS.Timeout;
     const startTime = performance.now();

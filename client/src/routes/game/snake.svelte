@@ -1,13 +1,14 @@
 <script lang="ts">
 	import Board from './board.svelte';
 	import { send } from '$lib/ws';
-	import { state } from '$lib/stores/state';
+	import { useState } from '$lib/stores/state.svelte';
 	import CountDown from './countDown.svelte';
 	import { EVENT } from '$server/constants/events';
 	import { GAME_STATUS, PLAYER_STATUS } from '$server/constants/status';
 
+	const states = useState();
 	let w, h;
-	$: snakeDirection = $state.velocity;
+	$: snakeDirection = states.velocity;
 
 	const onKeyDown = (e: KeyboardEvent): void => {
 		const availableKeys = ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'];
@@ -28,10 +29,10 @@
 </script>
 
 <div class="h-full" bind:offsetWidth={w} bind:offsetHeight={h}>
-	{#if $state.gameStatus === GAME_STATUS.countDown}
+	{#if states.gameStatus === GAME_STATUS.countDown}
 		<CountDown />
 	{/if}
-	<Board parentWidth={w} parentHeight={h} on:canvasRezise />
+	<Board parentWidth={w} parentHeight={h} />
 </div>
 
-<svelte:window on:keydown={onKeyDown} />
+<svelte:window onkeydown={onKeyDown} />

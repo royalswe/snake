@@ -1,18 +1,15 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	let countdown = 5;
+	let countdown = $state(5);
 	let timer: any;
-	$: {
-		if (countdown === 0) {
-			if (timer) {
-				clearInterval(timer);
-				timer = null;
-			}
-		}
-	}
+
 	onMount(() => {
 		timer = setInterval(() => {
 			countdown -= 1;
+			if (countdown === 0) {
+				clearInterval(timer);
+				timer = null;
+			}
 		}, 1000);
 	});
 

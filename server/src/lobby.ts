@@ -28,7 +28,7 @@ export default new (class Lobby {
       if (err) {
         console.error('load chat error:', err);
       }
-      ws.emitter.roomEmit(EVENT.updateChat, { msg: data.toString() }); // Send the online clients list to all clients
+      ws.emitter.send(EVENT.updateChat, { msg: data.toString() }); // Send the online clients list to all clients
     });
   }
 

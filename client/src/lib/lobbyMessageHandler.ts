@@ -1,16 +1,19 @@
 import { LOBBY_EVENT as EVENT } from '$server/constants/events';
-import { chat } from '$lib/stores/chat';
-import { rooms } from '$lib/stores/rooms';
-import { clients } from '$lib/stores/onlineClients';
+import { useChat } from '$lib/stores/chat.svelte';
+import { useRooms } from '$lib/stores/rooms.svelte';
+import { useOnlineClients } from '$lib/stores/onlineClients.svelte';
 
+const chat = useChat();
+const rooms = useRooms();
+const clients = useOnlineClients();
 
 export function lobbyMessageHandler(msg: any) {
     switch (msg.type) {
         case EVENT.updateRooms:
-            rooms.set(msg.msg);
+            rooms.list = msg.msg;
             break;
         case EVENT.updateClients:
-            clients.set(msg.msg);
+            clients.list = msg.msg;
             break;
         case EVENT.chat:
             chat.add({ sender: msg.clientId, message: msg.msg, datetime: msg.datetime });

@@ -1,30 +1,23 @@
-<svelte:options immutable />
-
 <script context="module" lang="ts">
 	export const prerender = true;
 </script>
 
 <script lang="ts">
 	import type { GameState } from '$models/gameState';
-	import { createEventDispatcher, onMount } from 'svelte';
-	import { state } from '$lib/stores/state';
-	import { board } from '$lib/stores/board';
+	import { onMount } from 'svelte';
+	import { useState } from '$lib/stores/state.svelte';
+	import { useSnakes } from '$lib/stores/snakes.svelte';
 	import { GAME_STATUS } from '$server/constants/status';
+	import { BOARD } from '$lib/constants';
 
-	export let parentWidth: number;
-	export let parentHeight: number;
-	let width: number;
-	let height: number;
+	let { parentWidth, parentHeight } = $props();
+
+	const states = useState();
+	const snakes = useSnakes();
+	let board = $state(BOARD);
 	let grid: any;
-
 	let canvas: HTMLCanvasElement;
 	let ctx: any;
-
-	const dispatch = createEventDispatcher();
-
-	$: $state.gameStatus === GAME_STATUS.countDown && drawCanvas();
-	$: (height || width) && drawCanvas();
-	$: (height = $state.board.height), (width = $state.board.width);
 
 	const delay = (func: Function, delay: number) => {
 		let timer: any;
@@ -35,24 +28,33 @@
 	};
 
 	function calculateAspectRatioFit() {
-		const ratio = Math.min(parentWidth / width, parentHeight / height);
-		return { width: width * ratio, height: height * ratio };
+		const ratio = Math.min(
+			(parentWidth as number) / board.width,
+			(parentHeight as number) / board.height
+		);
+		return { width: board.width * ratio, height: board.height * ratio };
 	}
 
 	onMount(() => {
-		board.subscribe((states: any) => {
-			if (!states) {
-				return console.log('no state on canvas loop');
-			}
-			//requestAnimationFrame(() => {
-			states.forEach((state: GameState) => {
-				drawPlayer(state);
-			});
-			//});
+		setTimeout(() => {
+			drawCanvas();
+		}, 100);
+	});
+	$effect(() => {
+		if (states.gameStatus === GAME_STATUS.countDown) {
+			drawCanvas();
+		}
+	});
+	$effect(() => {
+		//requestAnimationFrame(() => {
+		snakes.state?.forEach((state: GameState) => {
+			drawPlayer(state);
 		});
+		//});
 		ctx = canvas.getContext('2d');
 
 		window.addEventListener('resize', delay(drawCanvas, 100));
+
 		return () => {
 			window.removeEventListener('resize', delay(drawCanvas, 100));
 		};
@@ -60,7 +62,6 @@
 
 	function drawCanvas() {
 		grid = calculateAspectRatioFit();
-		dispatch('canvasRezise', grid);
 
 		const w = grid.width;
 		const h = grid.height;
@@ -76,10 +77,15 @@
 
 		ctx.beginPath();
 		ctx.fillStyle = '#263445';
-		for (let column = 0; column < width; column++) {
-			for (let row = 0; row < height; row++) {
+		for (let column = 0; column < board.width; column++) {
+			for (let row = 0; row < board.height; row++) {
 				if ((row % 2 === 0 && column % 2 === 1) || (row % 2 === 1 && column % 2 === 0)) {
-					ctx.rect((column * w) / width, (row * h) / height, w / width, h / height);
+					ctx.rect(
+						(column * w) / board.width,
+						(row * h) / board.height,
+						w / board.width,
+						h / board.height
+					);
 				}
 			}
 		}
@@ -107,4 +113,4 @@
 	}
 </script>
 
-<canvas bind:this={canvas} />
+<canvas bind:this={canvas}></canvas>

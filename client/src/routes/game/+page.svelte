@@ -3,12 +3,15 @@
 	import Snake from './snake.svelte';
 	import ErrorModule from '$lib/errorModule.svelte';
 	import { connect } from '$lib/ws';
+	import { useState } from '$lib/stores/state.svelte';
 	import { onMount } from 'svelte';
-	import { state } from '$lib/stores/state';
+	import { BOARD } from '$lib/constants';
+
 	import Chat from '../chat.svelte';
 	import ClientList from './clientList.svelte';
 
-	$: roomName = '';
+	const states = useState();
+	let roomName = $state('');
 
 	onMount(() => {
 		// Get room name and board size from url
@@ -20,6 +23,9 @@
 		if (board) {
 			params.width = +board?.split(':')[0];
 			params.height = +board?.split(':')[1];
+
+			BOARD.width = params.width;
+			BOARD.height = params.height;
 		}
 
 		connect(
@@ -30,12 +36,6 @@
 			params
 		);
 	});
-
-	let height = 'auto';
-
-	function handleHeightChange(event: any) {
-		height = event.detail.height + 8;
-	}
 </script>
 
 <svelte:head>
@@ -51,7 +51,7 @@
 			<img src="/images/snake-pixel.256.png" width="100" alt="snake logo" />
 			<div class="mx-2 flex flex-col justify-evenly h-full">
 				<h4>Room name: {roomName}</h4>
-				<h4>GameState: {$state.gameStatus} / PlayerState: {$state.playerStatus}</h4>
+				<h4>GameState: {states.gameStatus} / PlayerState: {states.playerStatus}</h4>
 			</div>
 		</div>
 	</header>
@@ -66,11 +66,11 @@
 			</div>
 		</div>
 	</sidebar>
-	<main class="p-1" style="min-height:{height}px;">
-		<Snake on:canvasRezise={handleHeightChange} />
+	<main class="p-1">
+		<Snake />
 	</main>
 
-	{#if $state.error}
+	{#if states.error}
 		<ErrorModule />
 	{/if}
 </div>

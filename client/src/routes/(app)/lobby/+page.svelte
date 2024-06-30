@@ -1,9 +1,12 @@
 <script lang="ts">
 	import { connect, send } from '$lib/ws';
 	import { onMount } from 'svelte';
-	import { rooms } from '$lib/stores/rooms';
-	import { clients } from '$lib/stores/onlineClients';
+	import { useRooms } from '$lib/stores/rooms.svelte';
+	import { useOnlineClients } from '$lib/stores/onlineClients.svelte';
 	import Chat from '../../chat.svelte';
+
+	const rooms = useRooms();
+	const clients = useOnlineClients();
 
 	onMount(() => {
 		connect(
@@ -29,7 +32,7 @@
 			const randomNumber2 = Math.floor(Math.random() * animals.length);
 			name = adjectives[randomNumber1] + "-" + animals[randomNumber2];
 		}
-		while ($rooms.some((room) => room.name === name));
+		while (rooms.list?.some((room) => room.name === name));
 
 		return name;
 	}
@@ -57,9 +60,12 @@
 	<!-- Game Rooms -->
 	<div class="flex-1 p-6 bg-c-blue-600">
 		<h1 class="text-4xl font-bold mb-6">Game Lobby</h1>
-		<button class="btn my-2 bg-green-700 hover:bg-green-800" on:click={() => (showModal = true)}
-			>Create New Room</button
-		>
+		<button
+			type="button"
+			class="btn my-2 bg-green-700 hover:bg-green-800"
+			onclick={() => (showModal = true)}
+			>Create New Room
+		</button>
 		<!-- Create Room Modal -->
 		{#if showModal}
 			<div
@@ -74,9 +80,9 @@
 					<div
 						class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
 						aria-hidden="true"
-					/>
+					></div>
 					<span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"
-						>&#8203;</span
+						>​</span
 					>
 					<div
 						class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
@@ -107,13 +113,13 @@
 							</div>
 						</div>
 						<div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-							<button type="button" class="btn bg-blue-700 hover:bg-blue-800" on:click={createGame}
+							<button type="button" class="btn bg-blue-700 hover:bg-blue-800" onclick={createGame}
 								>Create</button
 							>
 							<button
 								type="button"
 								class="btn bg-red-500 hover:bg-red-600 ml-2 mr-2"
-								on:click={() => (showModal = false)}>Cancel</button
+								onclick={() => (showModal = false)}>Cancel</button
 							>
 						</div>
 					</div>
@@ -135,7 +141,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#if $rooms.length === 0}
+					{#if rooms.list?.length < 1}
 						<tr>
 							<td colspan="5" class="text-center">No rooms available!</td>
 						</tr>
@@ -144,13 +150,13 @@
 								<button
 									type="button"
 									class="btn my-2 bg-green-700 hover:bg-green-800"
-									on:click={() => (showModal = true)}
+									onclick={() => (showModal = true)}
 									>Create New Room
 								</button>
 							</td>
 						</tr>
 					{/if}
-					{#each $rooms as room}
+					{#each rooms.list as room}
 						<tr class="hover:bg-gray-800">
 							<td>{room.name}</td>
 							<td>{room.clientIds}</td>
@@ -159,7 +165,7 @@
 							<td>
 								<button
 									type="button"
-									on:click={() => joinGame(room.name)}
+									onclick={() => joinGame(room.name)}
 									class="bg-blue-700 text-gray-200 py-1 px-2 rounded hover:bg-blue-800">Join</button
 								>
 							</td>
@@ -189,7 +195,7 @@
 		<div class="mt-6">
 			<h3 class="text-xl font-bold mb-4">Online Players</h3>
 			<ul>
-				{#each $clients as client}
+				{#each clients.list as client}
 					<li>{client}</li>
 				{/each}
 			</ul>

@@ -1,59 +1,77 @@
 <script lang="ts">
-	import { state } from '$lib/stores/state';
+	import { useState } from '$lib/stores/state.svelte';
 	import { send } from '$lib/ws';
 	import { EVENT } from '$server/constants/events';
 	import { PLAYER_STATUS } from '$server/constants/status';
 	import { PLAYER_COLORS } from '$lib/constants';
 
+	const states = useState();
+
 	const ready = () => {
-		if ($state.gameStatus !== 'running') {
+		if (states.gameStatus !== 'running') {
 			send(EVENT.playerReady, {});
 		}
 	};
+
 	const takeSeat = (color: string) => send(EVENT.joinGame, { color });
-	const seats = PLAYER_COLORS;
 
-	$: $state.clients, renderClientList();
+	let players = $state(PLAYER_COLORS);
 
-	const renderClientList = () => {
+	let seats = $derived.by(() => {
 		// remove clientIds from seats if they are not in the client list, and add them if they are
-		outer: for (const color of Object.keys(seats)) {
-			for (const client of $state.clients) {
+		outer: for (const color of Object.keys(players)) {
+			for (let i = 0; i < states.clients.length; i++) {
+				const client = states.clients[i];
 				if (client.color === color) {
-					seats[color] = { id: client.clientId, status: client.clientStatus };
+					players[color] = { id: client.clientId, status: client.clientStatus };
 					continue outer;
+				} else if (i === states.clients.length - 1) {
+					players[color] = null;
 				}
 			}
-			seats[color] = null;
 		}
-	};
+		return players;
+	});
+
+	function once(fn: any) {
+		return function (event: any) {
+			if (fn) fn.call(this, event);
+			fn = null;
+		};
+	}
+
+	function preventDefault(fn: any) {
+		return function (event: any) {
+			event.preventDefault();
+			fn.call(this, event);
+		};
+	}
 </script>
 
-<p>your player name: {$state.you}</p>
+<p>your player name: {states.you}</p>
 
 <div class="client-list p-1">
 	<ul>
-		{#each Object.keys(seats) as color}
+		{#each Object.keys(seats) as color, i}
 			<!-- random number -->
-
 			<li class="my-1" class:ready={seats[color]?.status === PLAYER_STATUS.ready}>
 				<!-- <li class="my-1 {seats[color] && seats[color].status === PLAYER_STATUS.ready ? 'ready' : ''}"> -->
 				<!-- set ready class if $state.playerStatus is ready -->
-				<i class="circle {color}" />
+				<i class="circle {color}"></i>
 				{#if seats[color]}
-					{#if $state.you === seats[color]?.id && $state.playerStatus === PLAYER_STATUS.joined}
+					{#if states.you === seats[color]?.id && states.playerStatus === PLAYER_STATUS.joined}
 						<button
-							disabled={$state.gameStatus === 'running'}
+							disabled={states.gameStatus === 'running'}
 							class="bg-blue-800 hover:bg-blue-900 text-white px-4 rounded"
-							on:click|once={ready}
+							onclick={once(preventDefault(ready))}
 							>Click when ready!
 						</button>
 					{/if}
 					{seats[color]?.id}
-				{:else if $state.playerStatus === PLAYER_STATUS.spectating}
+				{:else if states.playerStatus === PLAYER_STATUS.spectating}
 					<button
 						class="bg-blue-500 hover:bg-blue-700 text-white px-4 rounded"
-						on:click|once={() => takeSeat(color)}
+						onclick={once(preventDefault(() => takeSeat(color)))}
 						>Take seat
 					</button>
 				{/if}
@@ -61,7 +79,7 @@
 		{/each}
 		<hr />
 
-		{#each $state.clients as client}
+		{#each states.clients as client}
 			{#if !client.color}
 				<p>{client.clientId}</p>
 			{/if}

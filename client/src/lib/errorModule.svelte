@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { state } from '$lib/stores/state';
+	import { useState } from '$lib/stores/state.svelte';
 
+	const states = useState();
 	const clearErrors = () => {
-		$state.error = undefined;
+		states.error = undefined;
 	};
 </script>
 
@@ -11,7 +12,7 @@
 		<h2>Ouch...</h2>
 		<button class="close" on:click={clearErrors}>&times;</button>
 		<div class="content text-gray-900">
-			{$state.error}
+			{states.error}
 		</div>
 	</div>
 </div>

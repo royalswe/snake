@@ -6,6 +6,6 @@
     "prod": "npm run build:server && npm run build:client"
   },
   "devDependencies": {
-    "concurrently": "^8.2.1"
+    "concurrently": "^8.2.2"
   }
 }
