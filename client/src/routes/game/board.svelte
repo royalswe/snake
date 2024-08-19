@@ -39,6 +39,14 @@
 		setTimeout(() => {
 			drawCanvas();
 		}, 100);
+
+		ctx = canvas.getContext('2d');
+
+		window.addEventListener('resize', delay(drawCanvas, 100));
+
+		return () => {
+			window.removeEventListener('resize', delay(drawCanvas, 100));
+		};
 	});
 	$effect(() => {
 		if (states.gameStatus === GAME_STATUS.countDown) {
@@ -51,13 +59,6 @@
 			drawPlayer(state);
 		});
 		//});
-		ctx = canvas.getContext('2d');
-
-		window.addEventListener('resize', delay(drawCanvas, 100));
-
-		return () => {
-			window.removeEventListener('resize', delay(drawCanvas, 100));
-		};
 	});
 
 	function drawCanvas() {
