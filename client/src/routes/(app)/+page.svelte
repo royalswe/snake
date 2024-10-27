@@ -7,7 +7,7 @@
 			<span class="text-5xl">Snake</span>
 		</h1>
 		<p class="text-lg font-bold text-gray-100 mt-10 tracking-wider">
-			This game is under development but you can try it out as is.
+			This game is under development but you can try it out.
 		</p>
 		<p class="text-lg font-semibold text-gray-300 tracking-wider">
 			Snake is a multiplayer game where the goal is to survive as long as possible. Challenge your

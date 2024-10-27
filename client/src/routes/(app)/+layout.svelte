@@ -61,7 +61,7 @@
 </header>
 
 <noscript>
-	<p>We're sorry, but Snake doesn't work without JavaScript enabled. Please enable it buddy</p>
+	<p>We're sorry, but Snake doesn't work without JavaScript enabled. Please enable it</p>
 </noscript>
 
 <slot />
