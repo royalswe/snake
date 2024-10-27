@@ -18,19 +18,21 @@
 	let players = $state(PLAYER_COLORS);
 
 	let seats = $derived.by(() => {
-		// remove clientIds from seats if they are not in the client list, and add them if they are
-		outer: for (const color of Object.keys(players)) {
+		const colorKeys = Object.keys(players);
+		const updatedPlayers = { ...players };
+
+		outer: for (const color of colorKeys) {
 			for (let i = 0; i < states.clients.length; i++) {
 				const client = states.clients[i];
 				if (client.color === color) {
-					players[color] = { id: client.clientId, status: client.clientStatus };
+					updatedPlayers[color] = { id: client.clientId, status: client.clientStatus };
 					continue outer;
 				} else if (i === states.clients.length - 1) {
-					players[color] = null;
+					updatedPlayers[color] = null;
 				}
 			}
 		}
-		return players;
+		return updatedPlayers;
 	});
 
 	function once(fn: any) {

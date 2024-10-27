@@ -8,21 +8,20 @@
 
 	const states = useState();
 	let w, h;
-	$: snakeDirection = states.velocity;
 
 	const onKeyDown = (e: KeyboardEvent): void => {
 		const availableKeys = ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'];
 		if (availableKeys.indexOf(e.code) != -1 && PLAYER_STATUS.ready) {
 			// prevent moving in the opposite direction
 			if (
-				(e.code === 'ArrowDown' && snakeDirection === 'ArrowUp') ||
-				(e.code === 'ArrowUp' && snakeDirection === 'ArrowDown') ||
-				(e.code === 'ArrowLeft' && snakeDirection === 'ArrowRight') ||
-				(e.code === 'ArrowRight' && snakeDirection === 'ArrowLeft')
+				(e.code === 'ArrowDown' && states.velocity === 'ArrowUp') ||
+				(e.code === 'ArrowUp' && states.velocity === 'ArrowDown') ||
+				(e.code === 'ArrowLeft' && states.velocity === 'ArrowRight') ||
+				(e.code === 'ArrowRight' && states.velocity === 'ArrowLeft')
 			) {
 				return;
 			}
-			snakeDirection = e.code;
+			states.velocity = e.code;
 			send(EVENT.movement, { key: e.code });
 		}
 	};
