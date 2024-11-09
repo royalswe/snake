@@ -39,13 +39,12 @@ export default class Session {
   }
   gameInterval(callback: Function, interval: number) {
     let counter = 1;
-    let timeoutId: NodeJS.Timeout;
+    let timeoutId: any;
     const startTime = performance.now();
 
     function main() {
       const nextTime = startTime + counter * interval;
       timeoutId = setTimeout(main, interval - (performance.now() - nextTime));
-
       counter++;
       callback();
     }
