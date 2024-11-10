@@ -15,24 +15,27 @@
 
 	const takeSeat = (color: string) => send(EVENT.joinGame, { color });
 
-	let players = $state(PLAYER_COLORS);
-
 	let seats = $derived.by(() => {
-		const colorKeys = Object.keys(players);
-		const updatedPlayers = { ...players };
+		// Update players when clients change
+		const colorKeys = Object.keys(PLAYER_COLORS);
+		const players = { ...PLAYER_COLORS };
 
-		outer: for (const color of colorKeys) {
-			for (let i = 0; i < states.clients.length; i++) {
-				const client = states.clients[i];
-				if (client.color === color) {
-					updatedPlayers[color] = { id: client.clientId, status: client.clientStatus };
-					continue outer;
-				} else if (i === states.clients.length - 1) {
-					updatedPlayers[color] = null;
-				}
+		// First reset all seats
+		colorKeys.forEach((color) => {
+			players[color] = null;
+		});
+
+		// Then assign players to their seats
+		states.clients.forEach((client) => {
+			if (client.color) {
+				players[client.color] = {
+					id: client.clientId,
+					status: client.clientStatus
+				};
 			}
-		}
-		return updatedPlayers;
+		});
+
+		return players;
 	});
 
 	function once(fn: any) {
@@ -50,26 +53,22 @@
 	}
 </script>
 
-<p>your player name: {states.you}</p>
-
 <div class="client-list p-1">
+	<h3 class="font-bold mb-2">Players</h3>
 	<ul>
-		{#each Object.keys(seats) as color, i}
-			<!-- random number -->
-			<li class="my-1" class:ready={seats[color]?.status === PLAYER_STATUS.ready}>
-				<!-- <li class="my-1 {seats[color] && seats[color].status === PLAYER_STATUS.ready ? 'ready' : ''}"> -->
-				<!-- set ready class if $state.playerStatus is ready -->
+		{#each Object.entries(seats) as [color, player]}
+			<li class="my-1" class:ready={player?.status === PLAYER_STATUS.ready}>
 				<i class="circle {color}"></i>
-				{#if seats[color]}
-					{#if states.you === seats[color]?.id && states.playerStatus === PLAYER_STATUS.joined}
+				{#if player}
+					<span>{player.id}</span>
+					{#if states.you === player.id && player.status === PLAYER_STATUS.joined}
 						<button
 							disabled={states.gameStatus === 'running'}
-							class="bg-blue-800 hover:bg-blue-900 text-white px-4 rounded"
+							class="bg-blue-800 hover:bg-blue-900 text-white px-4 rounded ml-2"
 							onclick={once(preventDefault(ready))}
 							>Click when ready!
 						</button>
 					{/if}
-					{seats[color]?.id}
 				{:else if states.playerStatus === PLAYER_STATUS.spectating}
 					<button
 						class="bg-blue-500 hover:bg-blue-700 text-white px-4 rounded"
@@ -79,12 +78,17 @@
 				{/if}
 			</li>
 		{/each}
-		<hr />
+	</ul>
 
-		{#each states.clients as client}
-			{#if !client.color}
-				<p>{client.clientId}</p>
-			{/if}
+	<h3 class="font-bold mt-4 mb-2">Spectators</h3>
+	<ul>
+		{#each states.clients.filter((client) => !client.color) as spectator}
+			<li class="my-1">
+				<span>{spectator.clientId}</span>
+				{#if spectator.clientId === states.you}
+					<span class="ml-2">(You)</span>
+				{/if}
+			</li>
 		{/each}
 	</ul>
 </div>
@@ -94,40 +98,38 @@
 		background-color: beige;
 		border: 1px solid gray;
 		color: #000;
+		padding: 1rem;
+		border-radius: 0.5rem;
+	}
 
-		& .ready .circle {
-			&::after {
-				content: '\2713';
-				transform: translate(10%, -11%);
-				display: block;
-				font-size: 13px;
-				font-weight: 900;
-				color: #0cec13;
-			}
-		}
+	.circle {
+		border-radius: 100%;
+		display: inline-block;
+		width: 15px;
+		height: 15px;
+		vertical-align: middle;
+		margin-right: 10px;
+	}
 
-		& .circle {
-			border-radius: 100%;
-			display: inline-block;
-			width: 15px;
-			height: 15px;
-			font-size: 15px;
-			vertical-align: middle;
-			margin-bottom: 2px;
-			margin-right: 10px;
-		}
+	.ready .circle::after {
+		content: '✓';
+		display: block;
+		font-size: 13px;
+		font-weight: 900;
+		color: #0cec13;
+		transform: translate(3px, -2px);
+	}
 
-		& i.red {
-			background-color: red;
-		}
-		& i.blue {
-			background-color: blue;
-		}
-		& i.green {
-			background-color: green;
-		}
-		& i.yellow {
-			background-color: yellow;
-		}
+	.red {
+		background-color: red;
+	}
+	.blue {
+		background-color: blue;
+	}
+	.green {
+		background-color: green;
+	}
+	.yellow {
+		background-color: yellow;
 	}
 </style>

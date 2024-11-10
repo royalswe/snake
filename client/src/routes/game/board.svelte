@@ -15,9 +15,9 @@
 	const states = useState();
 	const snakes = useSnakes();
 	let board = $state(BOARD);
-	let grid: any;
+	let grid: { width: number; height: number };
 	let canvas: HTMLCanvasElement;
-	let ctx: any;
+	let ctx: CanvasRenderingContext2D;
 
 	const delay = (func: Function, delay: number) => {
 		let timer: any;
@@ -40,7 +40,12 @@
 			drawCanvas();
 		}, 100);
 
-		ctx = canvas.getContext('2d');
+		const context = canvas.getContext('2d');
+		if (context) {
+			ctx = context;
+		} else {
+			throw new Error('Unable to get 2D context from canvas');
+		}
 
 		window.addEventListener('resize', delay(drawCanvas, 100));
 
@@ -54,11 +59,10 @@
 		}
 	});
 	$effect(() => {
-		//requestAnimationFrame(() => {
-		snakes.state?.forEach((state: GameState) => {
-			drawPlayer(state);
-		});
-		//});
+		if (!snakes.state) return;
+		for (let i = 0; i < snakes.state.length; i++) {
+			drawPlayer(snakes.state[i]);
+		}
 	});
 
 	function drawCanvas() {
@@ -96,19 +100,23 @@
 	function drawPlayer(state: GameState) {
 		const w = grid.width;
 		const h = grid.height;
-		let size = (w + h) / (state.grid.x + state.grid.y);
+		const size = (w + h) / (state.grid.x + state.grid.y);
+		const halfSize = size / 2;
+		const offset = halfSize - 0.5;
+
+		ctx.fillStyle = state.color;
+		ctx.lineWidth = 1;
+		ctx.strokeStyle = '#000000';
 
 		const snake = state.snake;
-		ctx.fillStyle = state.color; //'#' + Math.floor(Math.random() * 16777215).toString(16);
-
 		for (let i = 0; i < snake.length; i++) {
 			const cell = snake[i];
+			const centerX = cell.x * size + halfSize;
+			const centerY = cell.y * size + halfSize;
 
 			ctx.beginPath();
-			ctx.arc(cell.x * size + size / 2, cell.y * size + size / 2, size / 2 - 0.5, 0, 2 * Math.PI);
+			ctx.arc(centerX, centerY, offset, 0, 2 * Math.PI);
 			ctx.fill();
-			ctx.lineWidth = 1;
-			ctx.strokeStyle = '#000000';
 			ctx.stroke();
 		}
 	}

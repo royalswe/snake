@@ -210,7 +210,7 @@ export default new (class Game {
   close(ws: WebSocket) {
     const session = ws.client?.session;
     if (!session) {
-      console.log('client is not in session');
+      return console.log('client can not be closed because it is not in a session');
     }
     session.leave(ws.client);
 
