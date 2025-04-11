@@ -1,2 +1,1 @@
-import uws from "./uws";
-uws;
+export {default} from "./uws";

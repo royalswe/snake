@@ -76,7 +76,7 @@ export default new (class Game {
           // send game status to all clients
           client.session.status = GAME_STATUS.waiting;
           ws.emitter.roomEmit(EVENT.gameStatus, { gameStatus: GAME_STATUS.waiting });
-          // change client status to joined if there status is ready
+          // change client status to joined if their status is ready
           client.session.clients.forEach((client) => {
             if (client.status === PLAYER_STATUS.ready) {
               // change client status to joined
@@ -100,7 +100,7 @@ export default new (class Game {
         }
 
         if (session.status === GAME_STATUS.running || client.status !== PLAYER_STATUS.joined) {
-          throw Error("game already started or you have not join the game"); // if game is allready started or player clicked ready when not joined
+          throw Error("game already started or you have not join the game"); // if game is already started or player clicked ready when not joined
         }
 
         client.status = PLAYER_STATUS.ready;
@@ -182,8 +182,7 @@ export default new (class Game {
     if (!session) {
       return null;
     }
-    const clients = [...session.clients].map((client: any) => ({ clientId: client.id, clientStatus: client.status, color: client.color }));
-    return clients;
+    return [...session.clients].map((client: any) => ({ clientId: client.id, clientStatus: client.status, color: client.color }));
   }
 
   getSession(roomName: string) {

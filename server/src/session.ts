@@ -71,10 +71,10 @@ export default class Session {
         continue;
       }
       if (client.status !== PLAYER_STATUS.ready) {
-        continue; // player allready lost
+        continue; // player already lost
       }
 
-      // take the first element of direction queue if it exist
+      // take the first element of direction queue if exist
       if (client.gameState.directionQueue.length) {
         state.vel = client.gameState.directionQueue.shift() || state.vel;
       }
@@ -88,7 +88,7 @@ export default class Session {
           client.status = PLAYER_STATUS.joined;
         }
       }
-      // snage grow
+      // snake grow
       state.snake.push({ ...state.pos });
     }
 
@@ -96,10 +96,10 @@ export default class Session {
     if (lostPlayers.size) {
       for (const client of this.playingClients) {
         if (client.status !== PLAYER_STATUS.ready) {
-          continue; // player allready lost
+          continue; // player already lost
         }
         for (const opponent of this.playingClients) {
-          if (opponent.id === client.id) continue; // allready checked if snake hits himself
+          if (opponent.id === client.id) continue; // already checked if snake hits himself
           if (this.isCollide(client.gameState.pos, opponent.gameState)) {
             client.status = PLAYER_STATUS.joined;
             lostPlayers.add(client.color);
@@ -138,7 +138,7 @@ export default class Session {
       }
     }
     this.clients.add(client);
-    client.session = this; // easy to acces session from client
+    client.session = this; // easy to access session from client
   }
   // K
   // L
